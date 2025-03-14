@@ -23,29 +23,34 @@ namespace synced_DAL.Repositories
 
         public bool Login(string email, string password)
         {
-            using (SqlConnection connection = _dbHelper.GetConnection())
+            try
             {
-                connection.Open();
-
-                SqlCommand command = new SqlCommand("SELECT COUNT(*) FROM users WHERE email = @email AND password = @password", connection);
-                command.Parameters.AddWithValue("@email", email);
-                command.Parameters.AddWithValue("@password", password);
-
-                int userCount = (int)command.ExecuteScalar();
-
-                if (userCount > 0)
+                using (SqlConnection connection = _dbHelper.GetConnection())
                 {
-                    return true; 
-                }
-                else
-                {
-                    return false;
+                    connection.Open();
+
+                    // Use SQL parameters to protect against SQL injection
+                    SqlCommand command = new SqlCommand("SELECT COUNT(*) FROM users WHERE email = @Email AND password = @Password", connection);
+                    command.Parameters.Add(new SqlParameter("@Email", SqlDbType.VarChar) { Value = email });
+                    command.Parameters.Add(new SqlParameter("@Password", SqlDbType.VarChar) { Value = password });
+
+                    int userCount = (int)command.ExecuteScalar();
+
+                    return userCount > 0;
                 }
             }
-
+            catch (SqlException ex)
+            {
+                throw new Exception("There was an issue with the database. Please try again later.", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An unknown error occurred.", ex);
+            }
         }
 
-        public bool Register(User user)  // Ensure it matches the interface
+
+        public bool Register(User user)
         {
             try
             {
@@ -53,29 +58,30 @@ namespace synced_DAL.Repositories
                 {
                     connection.Open();
 
+                    // Use SQL parameters to protect against SQL injection
                     SqlCommand command = new SqlCommand("INSERT INTO users (username, firstname, lastname, email, password, created_at) " +
-                    "VALUES (@username, @firstname, @lastname, @email, @password, @created_at)",
-                    connection);
+                        "VALUES (@Username, @Firstname, @Lastname, @Email, @Password, @CreatedAt)", connection);
 
-                    command.Parameters.AddWithValue("@username", user.username);
-                    command.Parameters.AddWithValue("@firstname", user.firstname);
-                    command.Parameters.AddWithValue("@lastname", user.lastname);
-                    command.Parameters.AddWithValue("@email", user.email);
-                    command.Parameters.AddWithValue("@password", user.password);
-                    command.Parameters.AddWithValue("@created_at", DateTime.Now);
+                    command.Parameters.Add(new SqlParameter("@Username", SqlDbType.VarChar) { Value = user.username });
+                    command.Parameters.Add(new SqlParameter("@Firstname", SqlDbType.VarChar) { Value = user.firstname });
+                    command.Parameters.Add(new SqlParameter("@Lastname", SqlDbType.VarChar) { Value = user.lastname });
+                    command.Parameters.Add(new SqlParameter("@Email", SqlDbType.VarChar) { Value = user.email });
+                    command.Parameters.Add(new SqlParameter("@Password", SqlDbType.VarChar) { Value = user.password });
+                    command.Parameters.Add(new SqlParameter("@CreatedAt", SqlDbType.DateTime) { Value = DateTime.Now });
 
                     int rowsAffected = command.ExecuteNonQuery();
 
-                    connection.Close();
-
-                    return rowsAffected > 0; // Return true if insert was successful
+                    return rowsAffected > 0;
                 }
+            }
+            catch (SqlException ex)
+            {
+                throw new Exception("There was an issue with the database. Please try again later.", ex);
             }
             catch (Exception ex)
             {
-                throw new Exception(    ex.Message );
+                throw new Exception("An unknown error occurred during registration.", ex);
             }
-            
         }
     }
 }
