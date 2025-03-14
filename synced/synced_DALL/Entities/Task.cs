@@ -41,8 +41,5 @@ namespace synced_DAL.Entities
 
         public Project project { get; set; }
 
-        public ICollection<Project_users> tasks { get; set; }
-
-        public ICollection<TaskComment> taskComments { get; set; }
     }
 }
