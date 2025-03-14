@@ -1,0 +1,55 @@
+﻿@page
+@model synced.Pages.RegisterPageModel
+@{
+    <div class="d-flex flex-column justify-content-center align-items-center w-100 ">
+        <h1>Sign up!</h1>
+
+
+            <form method="post" class=" w- h-50 bg-white p-4 rounded shadow d-flex justify-content-evenly flex-column gap-lg-3">
+
+            <div class="d-flex flex-row justify-content-between gap-3">
+
+                <div class="form-group w-100 gap-2">
+                    <label for="Firstname">firstname</label>
+                    <input type="text" class="form-control" id="firstname" name="firstname" required />
+                </div>
+
+                 <div class="form-group w-100">
+                        <label for="Lastname">Lastname</label>
+                        <input type="text" class="form-control" id="lastname" name="lastname" required />
+                 </div>
+            </div>
+                <div class="form-group w-100">
+                    <label for="Username">Username</label>
+                    <input type="text" class="form-control" id="Username" name="Username" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="Email">Email</label>
+                    <input type="text" class="form-control" id="email" name="email" required />
+                </div>
+
+                <div class="form-group mt-3">
+                    <label for="Password">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" required />
+                </div>
+
+                <div style="height: 50px;" class="d-flex">
+                    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                    {
+                        <div class=" text-danger mb-auto mt-auto">@Model.ErrorMessage</div>
+                    }
+                </div>
+
+                <div class="d-flex flex-column gap-3">
+                    <button type="submit" class="btn btn-primary mt-4 w-200">Register</button>
+                    <div class="m-auto">Or</div>
+                    <p class="m-auto">Already have an account? <a href="/LoginPage">SIGN IN</a> </p>
+                </div>
+
+
+
+            </form>
+
+    </div>
+}
