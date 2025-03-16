@@ -22,7 +22,7 @@ namespace synced_BBL.Services
         }
     
 
-        public bool LoginUser(LoginDto login)
+        public int LoginUser(LoginDto login)
         {
             return _userRepository.Login(login.email, login.password);
         }

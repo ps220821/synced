@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data;
 using Microsoft.Data.SqlClient;
+using System.Collections;
 
 
 
@@ -21,67 +22,53 @@ namespace synced_DAL.Repositories
             this._dbHelper = dbhelper;
         }
 
-        public bool Login(string email, string password)
+        public int Login(string email, string password)
         {
-            try
-            {
-                using (SqlConnection connection = _dbHelper.GetConnection())
-                {
-                    connection.Open();
+            string query = "SELECT id FROM users WHERE email = @Email AND password = @Password";
 
-                    // Use SQL parameters to protect against SQL injection
-                    SqlCommand command = new SqlCommand("SELECT COUNT(*) FROM users WHERE email = @Email AND password = @Password", connection);
-                    command.Parameters.Add(new SqlParameter("@Email", SqlDbType.VarChar) { Value = email });
-                    command.Parameters.Add(new SqlParameter("@Password", SqlDbType.VarChar) { Value = password });
-
-                    int userCount = (int)command.ExecuteScalar();
-
-                    return userCount > 0;
-                }
-            }
-            catch (SqlException ex)
+            var parameters = new List<SqlParameter>
             {
-                throw new Exception("There was an issue with the database. Please try again later.", ex);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An unknown error occurred.", ex);
-            }
+                new SqlParameter("@Email", SqlDbType.VarChar) { Value = email },
+                new SqlParameter("@Password", SqlDbType.VarChar) { Value = password }
+            };
+
+            int userId = _dbHelper.ExecuteScalar(query, parameters);
+
+            return userId; // Returns the user_id if login is successful, otherwise 0
         }
-
 
         public bool Register(User user)
         {
-            try
+            // Check if the email already exists in the database
+            string checkEmailQuery = "SELECT COUNT(*) FROM users WHERE email = @Email";
+            var checkEmailParameters = new List<SqlParameter>
             {
-                using (SqlConnection connection = _dbHelper.GetConnection())
-                {
-                    connection.Open();
+                new SqlParameter("@Email", SqlDbType.VarChar) { Value = user.email }
+            };
 
-                    // Use SQL parameters to protect against SQL injection
-                    SqlCommand command = new SqlCommand("INSERT INTO users (username, firstname, lastname, email, password, created_at) " +
-                        "VALUES (@Username, @Firstname, @Lastname, @Email, @Password, @CreatedAt)", connection);
+            int existingUserCount = _dbHelper.ExecuteScalar(checkEmailQuery, checkEmailParameters);
 
-                    command.Parameters.Add(new SqlParameter("@Username", SqlDbType.VarChar) { Value = user.username });
-                    command.Parameters.Add(new SqlParameter("@Firstname", SqlDbType.VarChar) { Value = user.firstname });
-                    command.Parameters.Add(new SqlParameter("@Lastname", SqlDbType.VarChar) { Value = user.lastname });
-                    command.Parameters.Add(new SqlParameter("@Email", SqlDbType.VarChar) { Value = user.email });
-                    command.Parameters.Add(new SqlParameter("@Password", SqlDbType.VarChar) { Value = user.password });
-                    command.Parameters.Add(new SqlParameter("@CreatedAt", SqlDbType.DateTime) { Value = DateTime.Now });
-
-                    int rowsAffected = command.ExecuteNonQuery();
-
-                    return rowsAffected > 0;
-                }
-            }
-            catch (SqlException ex)
+            // If the email already exists, return false
+            if (existingUserCount > 0)
             {
-                throw new Exception("There was an issue with the database. Please try again later.", ex);
+                return false; 
             }
-            catch (Exception ex)
+
+            // If email is not already in use, insert the new user
+            string insertQuery = "INSERT INTO users (username, firstname, lastname, email, password, created_at) " +
+                                 "VALUES (@Username, @Firstname, @Lastname, @Email, @Password, @CreatedAt)";
+
+            var insertParameters = new List<SqlParameter>
             {
-                throw new Exception("An unknown error occurred during registration.", ex);
-            }
+                new SqlParameter("@Username", SqlDbType.VarChar) { Value = user.username },
+                new SqlParameter("@Firstname", SqlDbType.VarChar) { Value = user.firstname },
+                new SqlParameter("@Lastname", SqlDbType.VarChar) { Value = user.lastname },
+                new SqlParameter("@Email", SqlDbType.VarChar) { Value = user.email },
+                new SqlParameter("@Password", SqlDbType.VarChar) { Value = user.password },
+                new SqlParameter("@CreatedAt", SqlDbType.DateTime) { Value = DateTime.Now }
+            };
+
+            return _dbHelper.ExecuteNonQuery(insertQuery, insertParameters);
         }
     }
 }

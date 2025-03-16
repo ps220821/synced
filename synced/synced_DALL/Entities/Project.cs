@@ -8,17 +8,12 @@ namespace synced_DAL.Entities
 {
     public class Project
     {
-        public int id { get; set; }
-
-        public string name { get; set; }
-
-        public string description { get; set; }
-
-        public DateOnly start_date { get; set; }
-
-        public DateOnly end_date { get; private set; }
-
-        public int owner { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public DateOnly Start_Date { get; set; }
+        public DateOnly End_Date { get;  set; }
+        public int Owner { get; set; }
 
         public User user { get; set; }
     }

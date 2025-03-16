@@ -11,7 +11,7 @@ namespace synced_DAL.Interfaces
     public interface IUserRepository
     {
         bool Register(User user);  // Ensure return type is bool
-        bool Login(string email, string password);     // Use User object instead of string parameters OR adjust in UserRepository
+        int Login(string email, string password);     // Use User object instead of string parameters OR adjust in UserRepository
     }
 }
 

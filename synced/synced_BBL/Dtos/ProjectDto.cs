@@ -9,14 +9,16 @@ namespace synced_BBL.Dtos
 {
     public class ProjectDto
     {
-        public string name { get; set; }
+        public int? Id { get; set; }
 
-        public string description { get; set; }
+        public string Name { get; set; }
 
-        public DateOnly start_date { get; set; }
+        public string Description { get; set; }
 
-        public DateOnly end_date { get; private set; }
+        public DateOnly Start_Date { get; set; }
 
-        public int owner { get; set; }
+        public DateOnly End_Date { get;  set; }
+
+        public int Owner { get; set; }
     }
 }
