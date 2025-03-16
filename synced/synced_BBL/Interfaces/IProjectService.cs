@@ -8,9 +8,12 @@ using System.Threading.Tasks;
 
 namespace synced_BBL.Interfaces
 {
-    public interface IUserService
+    public interface IProjectService
     {
-        bool RegisterUser(UserDto userDto);
-        int LoginUser(LoginDto login);
+        List<ProjectDto> GetAllProjects(int userId);
+
+        bool CreateProject(ProjectDto project);
+
+        bool DeleteProject(int id);
     }
 }

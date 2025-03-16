@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.IdentityModel.Tokens;
 using synced_BBL.Dtos;
 using synced_BBL.Interfaces;
 using synced_BBL.Services;
+using synced_DAL.Entities;
 
 
 namespace synced.Pages
@@ -31,9 +33,12 @@ namespace synced.Pages
             // Handle login logic
             if (!newUser.email.IsNullOrEmpty() && !newUser.password.IsNullOrEmpty())  // Example credentials
             {
-                if (_userService.LoginUser(newUser))
+                int userId = _userService.LoginUser(newUser);
+
+                if (userId != 0)
                 {
-                    return RedirectToPage("/Privacy");  // Redirect to another page on success
+                    HttpContext.Session.SetInt32("UserId", userId);
+                    return RedirectToPage("/ProjectsPage");  // Redirect to another page on success
                 }
                 else
                 {
