@@ -1,0 +1,33 @@
+﻿@model synced.Models.Project
+
+<div class="modal fade" id="addProjectModal" tabindex="-1" aria-labelledby="addProjectModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addProjectModalLabel">Add New Project</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" asp-page-handler="Add">
+                    <div class="mb-3">
+                        <label for="ProjectName" class="form-label">Project Name</label>
+                        <input type="text" class="form-control" id="ProjectName" name="NewProject.Name" value="@Model.Name" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="ProjectDescription" class="form-label">Project Description</label>
+                        <input type="text" class="form-control" id="ProjectDescription" name="NewProject.Description" value="@Model.Description" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="Start_Date" class="form-label">Start Date</label>
+                        <input type="date" class="form-control" id="Start_Date" name="NewProject.Start_Date" value="@Model.Start_Date.ToString("yyyy-MM-dd")" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="End_Date" class="form-label">End Date</label>
+                        <input type="date" class="form-control" id="End_Date" name="NewProject.End_Date" value="@Model.End_Date.ToString("yyyy-MM-dd")" required />
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Project</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

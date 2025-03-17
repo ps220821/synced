@@ -12,6 +12,7 @@ namespace synced_DAL.Entities
         medium,
         low,
     }
+
     public enum Status
     {
         todo,
@@ -21,25 +22,22 @@ namespace synced_DAL.Entities
 
     public class Task
     {
-        public int id { get; set; }
+        public int Id { get; set; }
 
-        public string title { get; set; }
+        public string Title { get; set; }
 
-        public string description { get; set; }
+        public string Description { get; set; }
 
-        public Status status { get; set; }
+        public Status Status { get; set; }
 
-        public Priorities priorities { get; set; }
+        public Priorities Priority { get; set; }
 
-        public DateTime deadline { get; set; }
+        public DateTime Deadline { get; set; }
 
-        public int user_id { get; set; }
+        public int User_id { get; set; }
 
-        public User? user { get; set; }
+        public int Project_id { get; set; }
 
-        public int project_id { get; set; }
-
-        public Project project { get; set; }
 
     }
 }
