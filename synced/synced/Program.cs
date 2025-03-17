@@ -15,9 +15,10 @@ builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // Adjust session timeout
-    options.Cookie.HttpOnly = false;
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = false; // For testing; consider true for security in production
     options.Cookie.IsEssential = true;
+    options.Cookie.Name = "SyncedSession"; // Optional: custom name for clarity
 });
 
 builder.Services.AddScoped<DatabaseHelper>(provider =>
@@ -27,11 +28,11 @@ builder.Services.AddScoped<DatabaseHelper>(provider =>
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<IProjectService, ProjectServices>();
 builder.Services.AddScoped<ProjectUserService>();
-
 builder.Services.AddScoped<IUserProjectRepository, UserProjectRepository>();
-
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+builder.Services.AddScoped<ITaskService, TaskService>();
 
 var app = builder.Build();
 
@@ -45,10 +46,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
+app.UseSession(); // Must be before UseRouting
 app.UseRouting();
-app.UseSession();
-
 app.UseAuthorization();
 app.MapRazorPages();
 

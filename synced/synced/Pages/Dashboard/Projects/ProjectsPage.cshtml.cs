@@ -1,11 +1,10 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using synced_BBL.Dtos;  // Assuming this contains your project DTOs
 using synced_BBL.Interfaces;
 using synced_BBL.Services;  // Assuming this contains the ProjectService interface
 
-namespace synced.Pages
+namespace synced.Pages.Dashboard.Projects
 {
     public class ProjectsPageModel : PageModel
     {
@@ -26,7 +25,7 @@ namespace synced.Pages
         public IActionResult OnGet()
         {
             // Try to get the UserId from the session
-            this.SessionUserId = HttpContext.Session.GetInt32("UserId") ?? 0;
+            SessionUserId = HttpContext.Session.GetInt32("UserId") ?? 0;
 
             if (SessionUserId == 0)
             {
@@ -42,7 +41,7 @@ namespace synced.Pages
         {
             if (ModelState.IsValid)
             {
-                NewProject.Owner = HttpContext.Session.GetInt32("UserId") ?? 0; 
+                NewProject.Owner = HttpContext.Session.GetInt32("UserId") ?? 0;
 
                 if (_projectService.CreateProject(NewProject))
                 {
@@ -58,14 +57,14 @@ namespace synced.Pages
             int userId = (int)HttpContext.Session.GetInt32("UserId");
             if (userId == ownerId)
             {
-                if (this._projectService.DeleteProject(projectId))
+                if (_projectService.DeleteProject(projectId))
                 {
                     return RedirectToPage();
                 }
             }
-            if (this._projectUserService.RemoveUserFromProject(userId, projectId))
+            if (_projectUserService.RemoveUserFromProject(userId, projectId))
             {
-                    return RedirectToPage();
+                return RedirectToPage();
 
             }
             return Page();

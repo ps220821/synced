@@ -12,11 +12,11 @@ namespace synced.Pages
 {
     public class LoginPageModel : PageModel
     {
-        private IUserService _userService;
+        private readonly IUserService _userService;
 
         public LoginPageModel(IUserService userService)
         {
-            this._userService = userService;
+            _userService = userService;
         }
 
         [BindProperty]
@@ -25,33 +25,29 @@ namespace synced.Pages
 
         public void OnGet()
         {
-
         }
 
         public IActionResult OnPost()
         {
-            // Handle login logic
-            if (!newUser.email.IsNullOrEmpty() && !newUser.password.IsNullOrEmpty())  // Example credentials
+            if (!string.IsNullOrEmpty(newUser.email) && !string.IsNullOrEmpty(newUser.password))
             {
                 int userId = _userService.LoginUser(newUser);
-
                 if (userId != 0)
                 {
                     HttpContext.Session.SetInt32("UserId", userId);
-                    return RedirectToPage("/ProjectsPage");  // Redirect to another page on success
+                    HttpContext.Session.CommitAsync().Wait();
+                    return RedirectToPage("/Dashboard/Projects/ProjectsPage");
                 }
                 else
                 {
                     ErrorMessage = "Wrong email or password";
-                    return Page(); // Show the same page with an error message
-
+                    return Page();
                 }
-
             }
             else
             {
-                ErrorMessage = "Email or password need to filled in";
-                return Page(); // Show the same page with an error message
+                ErrorMessage = "Email or password need to be filled in";
+                return Page();
             }
         }
     }

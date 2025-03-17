@@ -12,8 +12,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "synced_BBL", "synced_BBL\sy
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "synced_DALL", "synced_DALL\synced_DALL.csproj", "{466A180B-B984-4A69-98FE-04A8CF105432}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "ApplicationCore", "ApplicationCore\ApplicationCore.shproj", "{E6C9EE73-4E60-4C65-AFC2-DE95055609D2}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,8 +33,5 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		ApplicationCore\ApplicationCore.projitems*{e6c9ee73-4e60-4c65-afc2-de95055609d2}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal

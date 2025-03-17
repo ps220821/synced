@@ -1,0 +1,24 @@
+﻿@model synced.Models.ProjectCardModel
+
+<div class="bg-light p-1 rounded-2 border-bottom d-flex justify-content-between align-items-center"
+     style="height: 5rem; cursor: pointer;"
+     onclick="window.location.href='/Dashboard/@Model.Id'">
+    <div class="d-flex flex-row gap-5 w-25 align-items-center justify-content-center h-100">
+        <p class="m-0 fw-bold" style="width: 50px;">@Model.Name</p>
+        <p class="m-0" style="width: 50%;">@Model.Description</p>
+    </div>
+    <div>
+        <form id="deleteForm_@Model.Id" method="post" asp-page-handler="delete">
+            <input type="hidden" name="ProjectId" value="@Model.Id" />
+            <input type="hidden" name="OwnerId" value="@Model.Owner" />
+            @if (Model.Owner == Model.CurrentUserId)
+            {
+                <button type="submit" class="btn btn-danger w-100">Delete</button>
+            }
+            else
+            {
+                <button type="submit" class="btn btn-primary w-100">Leave</button>
+            }
+        </form>
+    </div>
+</div>
