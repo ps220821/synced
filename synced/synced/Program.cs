@@ -11,6 +11,21 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+
+
+builder.Services.AddScoped<DatabaseHelper>(provider =>
+    new DatabaseHelper(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// user scopes
+builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+builder.Services.AddScoped<IProjectService, ProjectServices>();
+builder.Services.AddScoped<IProjectUserService,ProjectUserService>();
+builder.Services.AddScoped<IUserProjectRepository, UserProjectRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+builder.Services.AddScoped<ITaskService, TaskService>();
+
 builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddSession(options =>
@@ -20,19 +35,6 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
     options.Cookie.Name = "SyncedSession"; // Optional: custom name for clarity
 });
-
-builder.Services.AddScoped<DatabaseHelper>(provider =>
-    new DatabaseHelper(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// user scopes
-builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
-builder.Services.AddScoped<IProjectService, ProjectServices>();
-builder.Services.AddScoped<ProjectUserService>();
-builder.Services.AddScoped<IUserProjectRepository, UserProjectRepository>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<ITaskRepository, TaskRepository>();
-builder.Services.AddScoped<ITaskService, TaskService>();
 
 var app = builder.Build();
 

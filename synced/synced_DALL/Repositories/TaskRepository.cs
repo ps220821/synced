@@ -21,10 +21,28 @@ namespace synced_DALL.Repositories
         {
             _dbHelper = dbhelper; // Initialize the DatabaseHelper instance
         }
-        public int CreateAsync(Task task)
+
+        public bool CreateAsync(Task task)
         {
-            throw new NotImplementedException();
+            string query = @"
+                    INSERT INTO tasks (title, description, status, priority, deadline, user_id, project_id) 
+                    VALUES (@Title, @Description, @Status, @Priority, @Deadline, @User_Id, @Project_Id);
+                    SELECT SCOPE_IDENTITY();";
+
+            var parameters = new List<SqlParameter>
+            {
+                new SqlParameter("@Title", SqlDbType.NVarChar) { Value = task.Title },
+                new SqlParameter("@Description", SqlDbType.NVarChar) { Value = task.Description },
+                new SqlParameter("@Status", SqlDbType.Int) { Value = task.Status },
+                new SqlParameter("@Priority", SqlDbType.Int) { Value = task.Priority },
+                new SqlParameter("@Deadline", SqlDbType.DateTime) { Value = task.Deadline },
+                new SqlParameter("@User_Id", SqlDbType.Int) { Value = (object?)task.User_id ?? DBNull.Value },
+                new SqlParameter("@Project_Id", SqlDbType.Int) { Value = task.Project_id }
+            };
+
+            return _dbHelper.ExecuteNonQuery(query, parameters);
         }
+
 
         public bool DeleteAsync(int id)
         {
@@ -50,7 +68,7 @@ namespace synced_DALL.Repositories
                     Status = Enum.TryParse(reader.GetString(reader.GetOrdinal("status")), true, out Status status) ? status : Status.todo,
                     Priority = Enum.TryParse(reader.GetString(reader.GetOrdinal("priority")), true, out Priorities priority) ? priority : Priorities.medium,
                     Deadline = reader.GetDateTime(reader.GetOrdinal("deadline")),  // Mapping 'start_date' to Deadline
-                    User_id = reader.GetInt32(reader.GetOrdinal("user_id")),  // Mapping 'user_id' to User_id
+                    User_id = reader.IsDBNull(reader.GetOrdinal("user_id")) ? 0 : reader.GetInt32(reader.GetOrdinal("user_id")),  // Default to 0 if 'user_id' is NULL
                     Project_id = reader.GetInt32(reader.GetOrdinal("project_id"))  // Mapping 'project_id' to Project_id
                 };
             });
@@ -61,9 +79,33 @@ namespace synced_DALL.Repositories
             throw new NotImplementedException();
         }
 
-        public bool UpdateAsync(synced_DAL.Entities.Task task)
+        public bool UpdateAsync(Task task)
         {
-            throw new NotImplementedException();
+            string query = @"
+            UPDATE tasks SET 
+            title = @Title,
+            description = @Description,
+            status = @Status,
+            priority = @Priority,
+            deadline = @Deadline,
+            user_id = @User_Id,
+            project_id = @Project_Id
+            WHERE id = @Task_Id;";
+
+            var parameters = new List<SqlParameter>
+            {
+                new SqlParameter("@Title", SqlDbType.NVarChar) { Value = task.Title },
+                new SqlParameter("@Description", SqlDbType.NVarChar) { Value = task.Description },
+                new SqlParameter("@Status", SqlDbType.NVarChar) { Value = task.Status },
+                new SqlParameter("@Priority", SqlDbType.NVarChar) { Value = task.Priority },
+                new SqlParameter("@Deadline", SqlDbType.DateTime) { Value = task.Deadline },
+                new SqlParameter("@User_Id", SqlDbType.Int) { Value = (object?)task.User_id ?? DBNull.Value },
+                new SqlParameter("@Project_Id", SqlDbType.Int) { Value = task.Project_id },
+                new SqlParameter("@Task_Id", SqlDbType.Int) { Value = task.Id }
+            };
+
+            return _dbHelper.ExecuteNonQuery(query, parameters);
         }
+
     }
 }

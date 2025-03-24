@@ -19,10 +19,7 @@ namespace synced_DAL.Entities
 
         public int project_id { get; set; }
         public Project project { get; set; }
-
         public int user_id { get; set; }
-        public User user { get; set; }
-
         public Roles roles { get; set; }
     }
 }

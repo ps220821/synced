@@ -22,6 +22,23 @@ namespace synced_DAL.Repositories
             this._dbHelper = dbhelper;
         }
 
+        public int  GetUserByEmail(string email)
+        {
+            string query = "SELECT id FROM users WHERE email = @Email;";
+
+
+            var parameters = new List<SqlParameter>
+            {
+                new SqlParameter("@Email", SqlDbType.VarChar) { Value = email },
+            };
+
+            int userId = _dbHelper.ExecuteScalar(query, parameters);
+
+            return userId;
+        }
+
+        
+
         public int Login(string email, string password)
         {
             string query = "SELECT id FROM users WHERE email = @Email AND password = @Password";
@@ -39,7 +56,6 @@ namespace synced_DAL.Repositories
 
         public bool Register(User user)
         {
-            // Check if the email already exists in the database
             string checkEmailQuery = "SELECT COUNT(*) FROM users WHERE email = @Email";
             var checkEmailParameters = new List<SqlParameter>
             {
@@ -48,16 +64,14 @@ namespace synced_DAL.Repositories
 
             int existingUserCount = _dbHelper.ExecuteScalar(checkEmailQuery, checkEmailParameters);
 
-            // If the email already exists, return false
             if (existingUserCount > 0)
             {
                 return false; 
             }
 
-            // If email is not already in use, insert the new user
+
             string insertQuery = "INSERT INTO users (username, firstname, lastname, email, password, created_at) " +
                                  "VALUES (@Username, @Firstname, @Lastname, @Email, @Password, @CreatedAt)";
-
             var insertParameters = new List<SqlParameter>
             {
                 new SqlParameter("@Username", SqlDbType.VarChar) { Value = user.username },

@@ -14,7 +14,7 @@ namespace synced_DALL.Interfaces
 
         Task GetByIdAsync(int id);
 
-        int CreateAsync(Task task);
+        bool CreateAsync(Task task);
 
         bool UpdateAsync(Task task);
 

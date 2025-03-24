@@ -1,22 +1,22 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using synced_BBL.Dtos;  // Assuming this contains your project DTOs
-using synced_BBL.Interfaces;
-using synced_BBL.Services;  // Assuming this contains the ProjectService interface
+using synced_BBL.Dtos;
+using synced_BBL.Interfaces;  // Assuming this contains your project DTOs
 
 namespace synced.Pages.Dashboard.Projects
 {
     public class ProjectsPageModel : PageModel
     {
         private readonly IProjectService _projectService;
-        private readonly ProjectUserService _projectUserService;
+        private readonly IProjectUserService _projectUserService;
+
         public int SessionUserId;
         public List<ProjectDto> Projects { get; private set; }
 
         [BindProperty]
         public ProjectDto NewProject { get; set; }
 
-        public ProjectsPageModel(IProjectService projectService, ProjectUserService projectUserService)
+        public ProjectsPageModel(IProjectService projectService, IProjectUserService projectUserService)
         {
             _projectService = projectService;
             _projectUserService = projectUserService;
@@ -24,6 +24,7 @@ namespace synced.Pages.Dashboard.Projects
 
         public IActionResult OnGet()
         {
+            HttpContext.Session.Remove("ProjectId");
             // Try to get the UserId from the session
             SessionUserId = HttpContext.Session.GetInt32("UserId") ?? 0;
 

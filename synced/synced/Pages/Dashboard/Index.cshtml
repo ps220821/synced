@@ -1,4 +1,65 @@
-﻿@page "/Dashboard/{Id:int}/"
+﻿@page "/Dashboard/{ProjectId:int}"
+@using synced.Models; 
 @model synced.Pages.Dashboard.IndexModel
 @{
+    ViewData["Title"] = "Dashboard";
 }
+
+<vc:add-task-modal task-dto="Model._tasksDto"></vc:add-task-modal>
+
+<div class="container">
+    <div class="d-flex justify-content-between w-100">
+        <h5>All tasks</h5>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTaskModal_@Model.ProjectId">
+            Add Task
+        </button>
+    </div>
+
+          
+    <div class="w-100 d-flex justify-content-between align-items-stretch gap-5" style="height: 75vh;">
+        <div class="h-100 w-100">
+            <p>To-do</p>
+            <div class="w-100 h-100 bg-light p-1 d-flex flex-column gap-2 overflow-auto">
+                @if( Model._tasks.TodoTasks != null){
+                    @foreach (var task in Model._tasks.TodoTasks)
+                    {
+                        @await Component.InvokeAsync("TaskCard", new { task = task })
+                    }
+                }
+               
+            </div>
+        </div>
+        <div class="h-100 w-100">
+            <p>InProgress</p>
+            <div class="w-100 h-100 bg-light p-1 d-flex flex-column gap-2 overflow-auto">
+                @if (Model._tasks.InProgressTasks != null)
+                {
+                    @foreach (var task in Model._tasks.InProgressTasks)
+                    {
+                        @await Component.InvokeAsync("TaskCard", new { task = task })
+                    }
+                }
+                
+            </div>
+        </div>
+        <div class="h-100 w-100">
+            <p>Done</p>
+            <div class="w-100 h-100 bg-light p-1 d-flex flex-column gap-2 overflow-auto">
+                @if (Model._tasks.DoneTasks != null)
+                {
+                    @foreach (var task in Model._tasks.DoneTasks)
+                    {
+                        @await Component.InvokeAsync("TaskCard", new { task = task })
+                    }
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Render the modal directly with a unique ID based on the task -->
+<div class="modal fade" id="addTaskModal_@Model.ProjectId" tabindex="-1" aria-labelledby="addTaskModalLabel_@Model.ProjectId" aria-hidden="true">
+    @await Component.InvokeAsync("AddTaskModal", new { task = (TaskCardModel?)null, project_id = Model.ProjectId })
+</div>

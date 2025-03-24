@@ -9,6 +9,8 @@ namespace synced_DALL.Interfaces
 {
     public interface IUserProjectRepository
     {
+        List<User> GetAllUsers(int projectId);
+
         bool AddUserToProject(Project_users projectUser);
 
         bool RemoveUserFromProject(int userId, int projectId);
