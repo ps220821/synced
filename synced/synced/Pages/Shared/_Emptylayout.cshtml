@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Dashboard</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/synced.styles.css" asp-append-version="true" />
+</head>
+<body class="d-flex flex-column min-vh-100 ">
+    <div class="d-flex flex-grow-1" style="min-height: 100vh;">
+        <!-- Sidebar (assuming it was omitted intentionally; add it back if needed) -->
+        <!-- Example: -->
+      
+
+        <!-- Main Content -->
+        <div class="flex-grow-1 d-flex flex-column">
+            <main role="main" class="container py-3 flex-grow-1">
+                @RenderBody()
+            </main>
+
+            <footer class="border-top footer text-muted">
+                <div class="container">
+                    © 2025 - synced - <a asp-area="" asp-page="/Privacy">Privacy</a>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

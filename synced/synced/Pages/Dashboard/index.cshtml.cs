@@ -29,12 +29,14 @@
             }
 
 
-            public void OnGet()
+            public void OnGet(int projectId)
             {
                 if(this.ProjectId.HasValue)
                 {
-                    _tasks = this._taskService.GetAllTasks((int)this.ProjectId.Value);
-                }
+                ProjectId = projectId;
+                ViewData["ProjectId"] = projectId; // Slaat de ID op voor de layout.
+                _tasks = _taskService.GetAllTasks(projectId);
+            }
                 if (_tasks == null)
                 {
                     _tasks = new TaskGroupDto();  // Or any appropriate default collection

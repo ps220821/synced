@@ -1,0 +1,53 @@
+﻿@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    var projectId = HttpContextAccessor.HttpContext?.Session.GetInt32("ProjectId");
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Dashboard</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="d-flex flex-column min-vh-100 mb-0">
+
+    <!-- Sidebar -->
+    <div class="d-flex">
+        <nav class="bg-light border-end d-flex flex-column p-3" style="width: 250px; height: 100vh;">
+            <a class="navbar-brand" href="#">Synced</a>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link text-dark" asp-area="" asp-page="/Dashboard/Projects/ProjectsPage">Projects</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link text-dark" asp-page="/Dashboard/Index" asp-route-ProjectId="@projectId">
+                        Dashboard
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link text-dark" asp-area="" asp-page="/Dashboard/Users/UsersPage">Users</a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="flex-grow-1 d-flex flex-column">
+            <header class="bg-primary text-white p-3">
+                <h4>@ViewData["Title"]</h4>
+            </header>
+            <main class="container py-3 flex-grow-1">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+</body>
+</html>
