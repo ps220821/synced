@@ -35,6 +35,7 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
     options.Cookie.Name = "SyncedSession"; // Optional: custom name for clarity
 });
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
