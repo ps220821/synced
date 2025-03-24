@@ -34,10 +34,8 @@ namespace synced_DAL.Entities
 
         public DateTime Deadline { get; set; }
 
-        public int User_id { get; set; }
+        public int? User_id { get; set; }
 
         public int Project_id { get; set; }
-
-
     }
 }

@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/synced.styles.css" asp-append-version="true" />
 </head>
-<body>
+<body class="">
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
@@ -27,12 +27,16 @@
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="Auth/LoginPage">Login</a>
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Auth/LoginPage">Login</a>
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="Dashboard/Projects/ProjectsPage">projects</a>
-                            </l
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Dashboard/Projects/ProjectsPage">p rojects</a>
+                         </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Dashboard/Users/UsersPage">Users</a>
+                        </li>
                     </ul>
                 </div>
             </div>

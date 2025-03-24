@@ -20,8 +20,12 @@ namespace synced_BBL.Services
         {
             _userRepository = userRepository;
         }
-    
 
+        public int GetUserBYEmail(string email)
+        {
+            return this._userRepository.GetUserByEmail(email);
+        }
+        
         public int LoginUser(LoginDto login)
         {
             return _userRepository.Login(login.email, login.password);

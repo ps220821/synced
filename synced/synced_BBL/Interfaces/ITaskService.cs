@@ -12,7 +12,7 @@ namespace synced_BBL.Interfaces
 {
     public interface ITaskService
     {
-        List<Task> GetAllTasks(int projectId);
+        TaskGroupDto GetAllTasks(int projectId);
         bool CreateTask(TaskDto task);
         bool UpdateTask(TaskDto task);
         bool DeleteTask(int id);

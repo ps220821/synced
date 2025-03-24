@@ -1,13 +1,20 @@
-﻿using synced_DAL.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace synced_BBL.Dtos
+﻿namespace synced.Models
 {
-    public class TaskDto
+    public enum Priorities
+    {
+        high,
+        medium,
+        low,
+    }
+
+    public enum Status
+    {
+        todo,
+        inprogress,
+        done
+    }
+
+    public class TaskModel
     {
         public int Id { get; set; }
 
@@ -21,9 +28,8 @@ namespace synced_BBL.Dtos
 
         public DateTime Deadline { get; set; }
 
-        public int? User_id { get; set; }
+        public int User_id { get; set; }
 
         public int Project_id { get; set; }
-
     }
 }

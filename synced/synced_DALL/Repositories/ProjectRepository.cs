@@ -2,12 +2,7 @@
 using synced_DAL;
 using synced_DAL.Entities;
 using synced_DALL.Interfaces;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace synced_DALL.Repositories
 {

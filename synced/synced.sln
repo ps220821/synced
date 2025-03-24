@@ -4,13 +4,10 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "synced", "synced\synced.csproj", "{590FEEFA-98DF-4620-B0C7-1C61A5EDD862}"
-	ProjectSection(ProjectDependencies) = postProject
-		{466A180B-B984-4A69-98FE-04A8CF105432} = {466A180B-B984-4A69-98FE-04A8CF105432}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "synced_BBL", "synced_BBL\synced_BBL.csproj", "{A3C538EB-D91F-494E-9719-9907943E1078}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "synced_DALL", "synced_DALL\synced_DALL.csproj", "{466A180B-B984-4A69-98FE-04A8CF105432}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "synced_DALL", "synced_DALL\synced_DALL.csproj", "{10C09113-847D-4D56-B58C-79BC92860D0F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,10 +23,10 @@ Global
 		{A3C538EB-D91F-494E-9719-9907943E1078}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A3C538EB-D91F-494E-9719-9907943E1078}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A3C538EB-D91F-494E-9719-9907943E1078}.Release|Any CPU.Build.0 = Release|Any CPU
-		{466A180B-B984-4A69-98FE-04A8CF105432}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{466A180B-B984-4A69-98FE-04A8CF105432}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{466A180B-B984-4A69-98FE-04A8CF105432}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{466A180B-B984-4A69-98FE-04A8CF105432}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10C09113-847D-4D56-B58C-79BC92860D0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10C09113-847D-4D56-B58C-79BC92860D0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10C09113-847D-4D56-B58C-79BC92860D0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10C09113-847D-4D56-B58C-79BC92860D0F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,13 +1,8 @@
-﻿using synced_DAL.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using synced_BBL.Dtos;
 
-namespace synced_BBL.Dtos
+namespace synced.Models
 {
-    public class TaskDto
+    public class TaskCardModel
     {
         public int Id { get; set; }
 
@@ -24,6 +19,5 @@ namespace synced_BBL.Dtos
         public int? User_id { get; set; }
 
         public int Project_id { get; set; }
-
     }
 }

@@ -1,0 +1,17 @@
+﻿@model synced.Models.TaskCardModel
+
+<div class="card d-flex mb-0" data-bs-toggle="modal" data-bs-target="#addTaskModal_@Model.Id">
+    <div class="card-body">
+        <h6 class="card-title text-md">@Model.Title</h6>
+        <p class="card-subtitle text-muted">@Model.Description</p>
+        <div class="d-flex gap-2 mt-2 text-sm-start">
+            <p class="fw-bold">Priority:</p>
+            <p class="bg-light px-2 border rounded-3">@Model.Priority</p>
+        </div>
+    </div>
+</div>
+
+<!-- Render the modal directly with a unique ID based on the task -->
+<div class="modal fade" id="addTaskModal_@Model.Id" tabindex="-1" aria-labelledby="addTaskModalLabel_@Model.Id" aria-hidden="true">
+    @await Component.InvokeAsync("AddTaskModal", new { task = Model })
+</div>

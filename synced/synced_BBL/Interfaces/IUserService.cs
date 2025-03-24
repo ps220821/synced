@@ -10,6 +10,7 @@ namespace synced_BBL.Interfaces
 {
     public interface IUserService
     {
+        public int GetUserBYEmail(string email);
         bool RegisterUser(UserDto userDto);
         int LoginUser(LoginDto login);
     }

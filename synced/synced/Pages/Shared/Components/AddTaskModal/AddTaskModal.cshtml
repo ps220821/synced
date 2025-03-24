@@ -1,0 +1,61 @@
+﻿@model synced.Models.AddTaskCardModel
+@using synced.Models
+
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="taskModalLabel">@(Model.Id == 0 ? "Create Task" : "Update Task")</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form id="taskForm_@Model.Id" method="post" class="needs-validation" novalidate>
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="Project_id" />
+                <div class="mb-3">
+                    <label for="taskTitle_@Model.Id" class="form-label">Title</label>
+                    <input type="text" class="form-control" id="taskTitle_@Model.Id" asp-for="Title" required />
+                    <div class="invalid-feedback">Please enter a title</div>
+                </div>
+                <div class="mb-3">
+                    <label for="taskDescription_@Model.Id" class="form-label">Description</label>
+                    <textarea class="form-control" id="taskDescription_@Model.Id" asp-for="Description" required></textarea>
+                    <div class="invalid-feedback">Please enter a description</div>
+                </div>
+                <div class="mb-3 d-flex justify-content-between gap-2">
+                    <div>
+                        <label class="form-label">Status</label>
+                        <select class="form-control" id="taskStatus_@Model.Id" asp-for="Status">
+                            <option value="@Status.todo">To Do</option>
+                            <option value="@Status.inprogress">In Progress</option>
+                            <option value="@Status.done">Done</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">Priority</label>
+                            <select class="form-control" id="taskPriority_@Model.Id" asp-for="Priority">
+                                <option value="@Priorities.high">High</option>
+                                <option value="@Priorities.medium">Medium</option>
+                                <option value="@Priorities.low">Low</option>
+                            </select>
+                    </div>
+                    <div>
+                        <label class="form-label">Deadline</label>
+                        <input type="date" class="form-control" id="taskDeadline_@Model.Id" asp-for="Deadline" value="@Model.Deadline.ToString("yyyy-MM-dd")" required />
+                        <div class="invalid-feedback">Please select a deadline</div>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">Assigned To</label>
+                    <select class="form-control" id="taskAssignedTo_@Model.Id" asp-for="User_id">
+                        <option value="">Select a user</option>
+                        @foreach (var user in Model.Users)
+                        {
+                            <option value="@user.Id" selected="@(Model.User_id == user.Id ? "selected" : null)">@user.Firstname</option>
+                        }
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Save Task</button>
+            </form>
+        </div>
+    </div>
+</div>

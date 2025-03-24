@@ -1,0 +1,48 @@
+﻿@page
+@model synced.Pages.Dashboard.Users.UsersPageModel
+@{
+}
+
+
+<div class="container m-auto d-flex flex-column gap-4">
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success" role="alert">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+    <div class="w-100 d-flex justify-content-between">
+        <h2>Users in project</h2>
+
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal_@Model.ProjectId">
+            Add user
+        </button>
+
+    </div>
+    <div style ="height: 75vh;" class="d-flex flex-column gap-2">
+        @foreach (var project in Model.Users)
+        {
+            <form class="d-flex flex-row justify-content-between bg-light p-3 fw-bold" id="deleteForm_@project.Id" asp-page-handler="delete">
+                <input type="hidden" name="userId" value="@project.Id" />
+
+                <div class="d-flex gap-3">
+                    <p>@project.Firstname</p>
+                    <p>@project.Lastname</p>
+                </div>
+
+                <button type="submit" class="btn-danger btn">Remove</button>
+            </form>
+        }
+    </div>
+</div>
+
+<div class="modal fade" id="addUserModal_@Model.ProjectId" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+    @await Component.InvokeAsync("AddUserProjectModal")
+</div>
+

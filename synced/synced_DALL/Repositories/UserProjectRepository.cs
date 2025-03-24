@@ -18,6 +18,30 @@ namespace synced_DALL.Repositories
         public UserProjectRepository(DatabaseHelper databaseHelper) {
             _dbHelper = databaseHelper;
         }
+
+        public List<User> GetAllUsers(int projectId)
+        {
+            string query = @" SELECT u.* FROM project_users pu INNER JOIN users u ON pu.user_id = u.id WHERE pu.project_id = @projectId";
+            var parameters = new List<SqlParameter>
+            {
+                new SqlParameter("@projectId", SqlDbType.Int) { Value = projectId }
+            };
+
+            return _dbHelper.ExecuteReader(query, parameters, reader =>
+            {
+                return new User
+                {
+                    id = reader.GetInt32(reader.GetOrdinal("id")),
+                    username = reader.GetString(reader.GetOrdinal("username")),
+                    firstname = reader.GetString(reader.GetOrdinal("firstname")),
+                    lastname = reader.GetString(reader.GetOrdinal("lastname")),
+                    email = reader.GetString(reader.GetOrdinal("email")),
+                    password = reader.GetString(reader.GetOrdinal("password")),
+                    created_at = reader.GetDateTime(reader.GetOrdinal("created_at"))
+                };
+            });
+        }
+
         public bool AddUserToProject(Project_users projectUser)
         {
             string query = "INSERT INTO project_Users (project_id, user_id, roles) VALUES (@ProjectId, @UserId, @Roles);";
