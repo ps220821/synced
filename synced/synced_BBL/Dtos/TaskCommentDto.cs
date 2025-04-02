@@ -9,6 +9,7 @@ namespace synced_BBL.Dtos
 {
     public class TaskCommentDto
     {
+        public int id { get; set; }
         public int user_id { get; set; }
         public int task_id { get; set; }
         public string comment { get; set; }

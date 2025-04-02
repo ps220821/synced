@@ -19,12 +19,21 @@ builder.Services.AddScoped<DatabaseHelper>(provider =>
 // user scopes
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<IProjectService, ProjectServices>();
+
 builder.Services.AddScoped<IProjectUserService,ProjectUserService>();
 builder.Services.AddScoped<IUserProjectRepository, UserProjectRepository>();
+
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+
 builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 builder.Services.AddScoped<ITaskService, TaskService>();
+
+builder.Services.AddScoped<ITaskCommentService, TaskCommentService>(); // Register the interface with the service
+builder.Services.AddScoped<ItaskCommentRepository, TaskCommentRepository>();
+
+
+
 
 builder.Services.AddDistributedMemoryCache();
 

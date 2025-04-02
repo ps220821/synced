@@ -1,0 +1,18 @@
+﻿@using synced_BBL.Dtos
+@model List<TaskCommentExtendedDto>
+@{
+    var currentUserId = Context.Session.GetInt32("UserId") ?? 0;
+}
+
+@foreach (var comment in Model)
+{
+    <div class="d-flex mb-3  @(comment.user_id == currentUserId ? "justify-content-end" : "justify-content-start")">
+        <div class="p-2 border rounded @(comment.user_id == currentUserId ? "bg-primary text-white" : "bg-light")">
+            <div class="d-flex justify-content-between  gap-5">
+                <strong>@comment.username</strong>
+                <small>@comment.created_at.ToString("dd-MM-yyyy HH")</small>
+            </div>
+            <p class="mb-0">@comment.comment</p>
+        </div>
+    </div>
+}

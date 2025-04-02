@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using synced.Models;
 using synced_BBL.Dtos;
@@ -10,31 +10,46 @@ namespace synced.Pages.Shared.Components.AddTaskModal
 {
     public class AddTaskModal : ViewComponent
     {
-
         private readonly IProjectUserService _projectUserService;
-        private AddTaskCardModel taskCardModel;
-        private List<UserDto> userDtoList;
+        private readonly ITaskCommentService _taskCommentService;
 
-        public AddTaskModal(IProjectUserService projectUserService)
+        public AddTaskCardModel taskCardModel;
+        private List<UserDto> userDtoList;
+        public List<TaskCommentExtendedDto> comments;
+
+        public AddTaskModal(IProjectUserService projectUserService, ITaskCommentService taskCommentService)
         {
             this._projectUserService = projectUserService;
+            this._taskCommentService = taskCommentService;
         }
-
+     
         public IViewComponentResult Invoke(TaskCardModel? task, int? project_id)
         {
             AddTaskCardModel newTask = new AddTaskCardModel();
 
-            if (task != null) // Fix: Ensure task is not null before mapping
+            if (task != null)
             {
                 newTask = Mapper.MapCreate<AddTaskCardModel>(task);
                 newTask.Id = task.Id;
             }
 
-            int projectId = task?.Project_id ?? project_id ?? 0; // Ensure project_id is not null
+            int projectId = task?.Project_id ?? project_id ?? 0;
             this.userDtoList = _projectUserService.GetAllUsers(projectId);
             newTask.Users = userDtoList;
 
-            return View("AddTaskModal", newTask ?? new AddTaskCardModel());
+            int taskId = task?.Id ?? 0;
+            comments = taskId > 0 ? _taskCommentService.GetTaskComments(taskId) : new List<TaskCommentExtendedDto>();
+
+            // ✅ Ensure taskCardModel is properly initialized
+            taskCardModel = newTask ?? new AddTaskCardModel();
+
+            var model = new AddTaskViewModel
+            {
+                Task = taskCardModel, // Now, taskCardModel is guaranteed to be non-null
+                Comments = comments
+            };
+
+            return View("AddTaskModal", model);
         }
     }
 }
