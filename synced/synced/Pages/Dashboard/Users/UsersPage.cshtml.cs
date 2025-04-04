@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using synced.Core.Results;
 using synced_BBL.Dtos;
 using synced_BBL.Interfaces;
 using synced_BBL.Services;
@@ -22,29 +23,42 @@ namespace synced.Pages.Dashboard.Users
             _userService = userService;
         }
 
-        public void OnGet()
+        public async Task OnGetAsync()
         {
             ProjectId = HttpContext.Session.GetInt32("ProjectId") ?? 0;
-            Users = _projectUserService.GetAllUsers(ProjectId);
+
+            OperationResult<List<UserDto>> resultUser = await _projectUserService.GetAllUsers(ProjectId);
+
+            if (resultUser.Succeeded && resultUser.Data != null)
+            {
+                Users = resultUser.Data;
+            }
+            else
+            {
+                TempData["ErrorMessage"] = resultUser.Message ?? "Failed to load users.";
+            }
         }
 
-        public IActionResult OnPostAsync()
+        public async Task<IActionResult> OnPostAsync()
         {
             ProjectId = HttpContext.Session.GetInt32("ProjectId") ?? 0;
 
             if (!string.IsNullOrEmpty(NewUserEmail))
             {
                 int userId = _userService.GetUserBYEmail(NewUserEmail);
+
                 if (userId > 0 && ProjectId > 0)
                 {
-                    if (_projectUserService.AddUserToProject(ProjectId, userId))
+                    OperationResult<bool> result = await _projectUserService.AddUserToProject(ProjectId, userId);
+
+                    if (result.Succeeded && result.Data)
                     {
                         TempData["SuccessMessage"] = $"User '{NewUserEmail}' added to project successfully!";
                         return RedirectToPage();
                     }
                     else
                     {
-                        TempData["ErrorMessage"] = $"Failed to add user '{NewUserEmail}' to project.";
+                        TempData["ErrorMessage"] = result.Message ?? $"Failed to add user '{NewUserEmail}' to project.";
                     }
                 }
                 else
@@ -56,20 +70,22 @@ namespace synced.Pages.Dashboard.Users
             {
                 TempData["ErrorMessage"] = "Please enter a valid email address.";
             }
+
             return RedirectToPage();
         }
 
-        public IActionResult OnPostDelete(int userId)
+        public async Task<IActionResult> OnPostDeleteAsync(int userId)
         {
             ProjectId = HttpContext.Session.GetInt32("ProjectId") ?? 0;
-            if (this._projectUserService.RemoveUserFromProject(userId, ProjectId))
+
+            OperationResult<bool> result = await _projectUserService.RemoveUserFromProject(userId, ProjectId);
+
+            if (result.Succeeded && result.Data)
             {
                 return RedirectToPage();
             }
-            else
-            {
-                TempData["ErrorMessage"] = $"Some thing went wrong while removing user try again later";
-            }
+
+            TempData["ErrorMessage"] = result.Message ?? "Something went wrong while removing user. Try again later.";
             return Page();
         }
     }

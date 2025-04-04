@@ -13,7 +13,7 @@
             </div>
             <div class="modal-body d-flex flex-row gap-5">
                 <!-- Task Form (Left Side) -->
-                <form id="taskForm_@Model.Task.Id" asp-page="/Dashboard/Index" asp-page-handler="OnPostAsync" method="post" class="needs-validation w-100" novalidate>
+                <form id="taskForm_@Model.Task.Id" asp-page="/Dashboard/Index" asp-page-handler="OnPostAsync" method="post" class="needs-validation w-100" >
                     <input type="hidden" asp-for="Task.Id" />
                     <input type="hidden" asp-for="Task.Project_id" />
                     <div class="mb-3">

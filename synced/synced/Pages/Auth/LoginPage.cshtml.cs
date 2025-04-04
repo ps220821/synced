@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.IdentityModel.Tokens;
+using synced.Core.Results;
 using synced_BBL.Dtos;
 using synced_BBL.Interfaces;
 using synced_BBL.Services;
@@ -27,28 +28,30 @@ namespace synced.Pages
         {
         }
 
-        public IActionResult OnPost()
+        public async Task<IActionResult> OnPostAsync()
         {
             if (!string.IsNullOrEmpty(newUser.email) && !string.IsNullOrEmpty(newUser.password))
             {
-                int userId = _userService.LoginUser(newUser);
-                if (userId != 0)
+                // Use await here to get the OperationResult<int>
+                OperationResult<int> userId = await _userService.LoginUser(newUser);
+
+                // Check if login was successful
+                if (userId.Succeeded)
                 {
-                    HttpContext.Session.SetInt32("UserId", userId);
-                    HttpContext.Session.CommitAsync().Wait();
+                    // Store user id in session if login successful
+                    HttpContext.Session.SetInt32("UserId", userId.Data);
+                    await HttpContext.Session.CommitAsync();  // Commit session changes
+
                     return RedirectToPage("/Dashboard/Projects/ProjectsPage");
                 }
                 else
                 {
-                    ErrorMessage = "Wrong email or password";
+                    // Display error message if login fails
+                    ErrorMessage = userId.Message ?? "Invalid login attempt.";
                     return Page();
                 }
             }
-            else
-            {
-                ErrorMessage = "Email or password need to be filled in";
-                return Page();
-            }
+            return Page();
         }
     }
 }

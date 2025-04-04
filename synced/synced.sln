@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "synced_BBL", "synced_BBL\sy
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "synced_DALL", "synced_DALL\synced_DALL.csproj", "{10C09113-847D-4D56-B58C-79BC92860D0F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "synced.Core", "synced.Core\synced.Core.csproj", "{D0EF2C20-DA6C-462B-9D76-D8A8EC8898A8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{10C09113-847D-4D56-B58C-79BC92860D0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{10C09113-847D-4D56-B58C-79BC92860D0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{10C09113-847D-4D56-B58C-79BC92860D0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0EF2C20-DA6C-462B-9D76-D8A8EC8898A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0EF2C20-DA6C-462B-9D76-D8A8EC8898A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0EF2C20-DA6C-462B-9D76-D8A8EC8898A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0EF2C20-DA6C-462B-9D76-D8A8EC8898A8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

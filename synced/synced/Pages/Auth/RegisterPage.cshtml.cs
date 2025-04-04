@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using synced.Core.Results;
 using synced_BBL.Dtos;
 using synced_BBL.Interfaces;
 using synced_BBL.Services;
@@ -25,20 +26,33 @@ namespace synced.Pages
         }
 
 
-        public IActionResult OnPost()
+        public async Task<IActionResult> OnPost()
         {
             if (userDto != null)
             {
-                if (this._userService.RegisterUser(userDto))
+                OperationResult<int> result = await this._userService.RegisterUser(userDto);
+
+                if (result.Succeeded)
                 {
-                    return RedirectToPage("/LoginPage");  // Redirect to another page on success
+                    return RedirectToPage("/Auth/LoginPage");  // Redirect to another page on success
+                }
+
+                else
+                {
+                    // Als registratie niet succesvol is, toon een foutmelding
+                    ErrorMessage = result.Message;
                 }
 
             }
+            else
+            {
+                ErrorMessage = "Please fill out all the input fields";
 
-            ErrorMessage = "Please fill out all the input fields";
-             
+            }
+
             return Page();
+
+
         }
     }
 }

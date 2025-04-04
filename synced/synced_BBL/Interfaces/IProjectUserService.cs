@@ -1,4 +1,5 @@
-﻿using synced_BBL.Dtos;
+﻿using synced.Core.Results;
+using synced_BBL.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +10,8 @@ namespace synced_BBL.Interfaces
 {
     public interface IProjectUserService
     {
-        bool AddUserToProject(int projectId, int userId);
-        bool RemoveUserFromProject(int userId, int projectId);
-        List<UserDto> GetAllUsers(int projectId);
+        Task<OperationResult<bool>> AddUserToProject(int projectId, int userId);
+        Task<OperationResult<bool>> RemoveUserFromProject(int userId, int projectId);
+        Task<OperationResult<List<UserDto>>> GetAllUsers(int projectId);
     }
 }

@@ -9,6 +9,20 @@
 <vc:add-task-modal task-dto="Model._tasksDto"></vc:add-task-modal>
 
 <div class="container">
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success" role="alert">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
     <div class="d-flex justify-content-between w-100">
         <h5>All tasks</h5>
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTaskModal_@Model.ProjectId">
