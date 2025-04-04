@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using synced.Core.Results;
 using synced.Models;
 using synced_BBL.Dtos;
 using synced_BBL.Interfaces;
@@ -22,8 +23,8 @@ namespace synced.Pages.Shared.Components.AddTaskModal
             this._projectUserService = projectUserService;
             this._taskCommentService = taskCommentService;
         }
-     
-        public IViewComponentResult Invoke(TaskCardModel? task, int? project_id)
+
+        public async Task<IViewComponentResult> InvokeAsync(TaskCardModel? task, int? project_id)
         {
             AddTaskCardModel newTask = new AddTaskCardModel();
 
@@ -32,9 +33,12 @@ namespace synced.Pages.Shared.Components.AddTaskModal
                 newTask = Mapper.MapCreate<AddTaskCardModel>(task);
                 newTask.Id = task.Id;
             }
-
             int projectId = task?.Project_id ?? project_id ?? 0;
-            this.userDtoList = _projectUserService.GetAllUsers(projectId);
+
+            OperationResult<List<UserDto>> resultUsers =  await _projectUserService.GetAllUsers(projectId);
+
+            this.userDtoList = resultUsers.Data;
+
             newTask.Users = userDtoList;
 
             int taskId = task?.Id ?? 0;

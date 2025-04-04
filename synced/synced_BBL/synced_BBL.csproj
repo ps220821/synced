@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\synced.Core\synced.Core.csproj" />
     <ProjectReference Include="..\synced_DALL\synced_DALL.csproj" />
   </ItemGroup>
 

@@ -1,4 +1,5 @@
-﻿using synced_DAL.Entities;
+﻿using synced.Core.Results;
+using synced_DAL.Entities;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -11,8 +12,8 @@ namespace synced_DAL.Interfaces
     public interface IUserRepository
     {
         int GetUserByEmail(string email);
-        bool Register(User user);  // Ensure return type is bool
-        int Login(string email, string password);     // Use User object instead of string parameters OR adjust in UserRepository
+        OperationResult<int> Register(User user);  
+        OperationResult<int> Login(string email, string password);     
     }
 }
 

@@ -1,5 +1,8 @@
-﻿using synced_BBL.Dtos;
+﻿using Microsoft.Data.SqlClient;
+using synced.Core.Results;
+using synced_BBL.Dtos;
 using synced_BBL.Interfaces;
+using synced_DAL;
 using synced_DAL.Entities;
 using synced_DALL.Interfaces;
 using System;
@@ -20,23 +23,41 @@ namespace synced_BBL.Services
         {
             _taskRepository = taskRepository;
         }
-        public TaskGroupDto GetAllTasks(int projectId)
+        public async Task<OperationResult<TaskGroupDto>> GetAllTasks(int projectId)
         {
-            var tasks = _taskRepository.GetAllAsync(projectId);
-
-            List<TaskDto> taskDtos = tasks.Select(task => new TaskDto
+            try
             {
-                Id = task.Id,
-                Title = task.Title,  // Use 'Title' instead of 'title'
-                Description = task.Description,  // Correct property names
-                Status = task.Status,  // Correct property name for status
-                Priority = task.Priority,  // Correct property name for priorities
-                Deadline = task.Deadline,  // Correct property name for deadline
-                Project_id = task.Project_id,
-                User_id = task.User_id,
-            }).ToList();
+                List<Task> tasks = _taskRepository.GetAllAsync(projectId);
 
-            return GetTasksGroupedByStatus(taskDtos); ;
+                List<TaskDto> taskDtos = tasks.Select(task => new TaskDto
+                {
+                    Id = task.Id,
+                    Title = task.Title,
+                    Description = task.Description,
+                    Status = task.Status,
+                    Priority = task.Priority,
+                    Deadline = task.Deadline,
+                    Project_id = task.Project_id,
+                    User_id = task.User_id,
+                }).ToList();
+
+                TaskGroupDto taskGroup = GetTasksGroupedByStatus(taskDtos);
+
+                return OperationResult<TaskGroupDto>.Success(taskGroup);
+            }
+            catch (DatabaseException ex)
+            {
+                return OperationResult<TaskGroupDto>.Failure(ex.Message);
+            }
+            catch (SqlException ex)
+            {
+                return OperationResult<TaskGroupDto>.Failure(DatabaseHelper.GetErrorMessage(ex));
+            }
+            catch (Exception)
+            {
+                return OperationResult<TaskGroupDto>.Failure("An unexpected error occurred while fetching tasks.");
+            }
+
         }
 
         public TaskGroupDto GetTasksGroupedByStatus(List<TaskDto> tasks)
@@ -53,23 +74,78 @@ namespace synced_BBL.Services
             return taskGroupDto;
         }
 
-        public bool CreateTask(TaskDto task)
+        public async Task<OperationResult<bool>> CreateTask(TaskDto task)
         {
-            Task newTask = Mapper.MapCreate<Task>(task);
-            return this._taskRepository.CreateAsync(newTask);
+            try
+            {
+                Task newTask = Mapper.MapCreate<Task>(task);
+
+                // Call CreateAsync and await the result
+                bool result = this._taskRepository.CreateAsync(newTask);
+                if (result)
+                {
+                    return OperationResult<bool>.Success(true);  // Successfully created
+                }
+                else
+                {
+                    return OperationResult<bool>.Failure("Task could not be created.");  // Creation failed
+                }
+            }
+            catch (DatabaseException ex)
+            {
+                return OperationResult<bool>.Failure(ex.Message);  // Handle DatabaseException
+            }
+            catch (SqlException ex)
+            {
+                return OperationResult<bool>.Failure(DatabaseHelper.GetErrorMessage(ex));  // Handle SQL errors
+            }
+            catch (Exception ex)
+            {
+                return OperationResult<bool>.Failure("An unexpected error occurred while creating the task.");  // Handle other errors
+            }
+
         }
 
-        public bool DeleteTask(int id)
+        public Task<OperationResult<bool>> DeleteTask(int id)
         {
             throw new NotImplementedException();
         }
 
-        public bool UpdateTask(TaskDto task)
+        public async Task<OperationResult<bool>> UpdateTask(TaskDto task)
         {
-            Task newTask = Mapper.MapCreate<Task>(task);
-            newTask.Status = task.Status;
-            newTask.Priority = task.Priority;
-            return this._taskRepository.UpdateAsync(Mapper.MapCreate<Task>(task));
+            try
+            {
+                Task updatedTask = Mapper.MapCreate<Task>(task);
+
+                // Update the task's status and priority
+                updatedTask.Status = task.Status;
+                updatedTask.Priority = task.Priority;
+
+                // Call UpdateAsync and await the result
+                bool success =  this._taskRepository.UpdateAsync(updatedTask);
+
+                if (success)
+                {
+                    return OperationResult<bool>.Success(true);  // Successfully updated
+                }
+                else
+                {
+                    return OperationResult<bool>.Failure("Task could not be updated.");  // Update failed
+                }
+            }
+            catch (DatabaseException ex)
+            {
+                return OperationResult<bool>.Failure(ex.Message);  // Handle DatabaseException
+            }
+            catch (SqlException ex)
+            {
+                return OperationResult<bool>.Failure(DatabaseHelper.GetErrorMessage(ex));  // Handle SQL errors
+            }
+            catch (Exception ex)
+            {
+                return OperationResult<bool>.Failure("An unexpected error occurred while updating the task.");  // Handle other errors
+            }
+
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using synced_BBL.Dtos;
+﻿using synced.Core.Results;
+using synced_BBL.Dtos;
 using synced_DAL.Entities;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace synced_BBL.Interfaces
     public interface IUserService
     {
         public int GetUserBYEmail(string email);
-        bool RegisterUser(UserDto userDto);
-        int LoginUser(LoginDto login);
+        Task<OperationResult<int>> RegisterUser(UserDto userDto);
+        Task<OperationResult<int>> LoginUser(LoginDto login);
     }
 }

@@ -17,7 +17,9 @@ namespace velocitaApi.Mappers
 
             foreach (var sourceProp in sourceType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
-                var targetProp = targetType.GetProperty(sourceProp.Name);
+                // Case-insensitive search for matching property names
+                var targetProp = targetType.GetProperty(sourceProp.Name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+
                 if (targetProp != null && targetProp.CanWrite)
                 {
                     var value = sourceProp.GetValue(dto);

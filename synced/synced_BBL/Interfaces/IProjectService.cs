@@ -1,4 +1,5 @@
-﻿using synced_BBL.Dtos;
+﻿using synced.Core.Results;
+using synced_BBL.Dtos;
 using synced_DAL.Entities;
 using System;
 using System.Collections.Generic;
@@ -10,10 +11,10 @@ namespace synced_BBL.Interfaces
 {
     public interface IProjectService
     {
-        List<ProjectDto> GetAllProjects(int userId);
+        Task<OperationResult<List<ProjectDto>>> GetAllProjects(int id);
 
-        bool CreateProject(ProjectDto project);
+        Task<OperationResult<bool>> CreateProject(ProjectDto project);
 
-        bool DeleteProject(int id);
+        Task<OperationResult<bool>> DeleteProject(int id);
     }
 }

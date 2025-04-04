@@ -1,5 +1,8 @@
-﻿using synced_BBL.Dtos;
+﻿using Microsoft.Data.SqlClient;
+using synced.Core.Results;
+using synced_BBL.Dtos;
 using synced_BBL.Interfaces;
+using synced_DAL;
 using synced_DAL.Entities;
 using synced_DAL.Interfaces;
 using synced_DAL.Repositories;
@@ -25,18 +28,72 @@ namespace synced_BBL.Services
         {
             return this._userRepository.GetUserByEmail(email);
         }
-        
-        public int LoginUser(LoginDto login)
+
+        public async Task<OperationResult<int>> LoginUser(LoginDto login)
         {
-            return _userRepository.Login(login.email, login.password);
+            try
+            {
+                if (string.IsNullOrEmpty(login.email) || string.IsNullOrEmpty(login.password))
+                {
+                    return OperationResult<int>.Failure("Email and password must not be empty.");
+                }
+
+                var result = _userRepository.Login(login.email, login.password);
+
+                if (result.Succeeded)
+                {
+                    return OperationResult<int>.Success(result.Data);
+                }
+
+                return result;
+            }
+            catch (DatabaseException ex)
+            {
+                return OperationResult<int>.Failure(ex.Message);
+            }
+            catch (SqlException ex) 
+            {
+                return OperationResult<int>.Failure(DatabaseHelper.GetErrorMessage(ex));
+            }
+            catch (Exception ex)
+            {
+                return OperationResult<int>.Failure("An unexpected error occurred. Please try again.");
+            }
         }
 
-        // fix return type for now this way
-        public bool RegisterUser(UserDto userDto)
+        public async Task<OperationResult<int>> RegisterUser(UserDto userDto)
         {
-            var mappedUser = Mapper.MapCreate<User>(userDto);
+            try
+            {
+                var mappedUser = Mapper.MapCreate<User>(userDto);
 
-            return _userRepository.Register(mappedUser);
+                // Check if the mappedUser is null
+                if (mappedUser == null)
+                {
+                    return OperationResult<int>.Failure("User mapping failed.");
+                }
+                var result = _userRepository.Register(mappedUser);
+
+                if (result.Succeeded)
+                {
+                    return OperationResult<int>.Success(result.Data);
+                }
+
+                return result;
+            }
+            catch (DatabaseException ex)
+            {
+                return OperationResult<int>.Failure(ex.Message);
+            }
+            catch (SqlException ex) 
+            {
+                return OperationResult<int>.Failure(DatabaseHelper.GetErrorMessage(ex));
+            }
+            catch (Exception ex)
+            {
+                return OperationResult<int>.Failure("An unexpected error occurred. Please try again.");
+            }
+            
         }
     }
 }
