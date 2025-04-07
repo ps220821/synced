@@ -10,9 +10,8 @@ namespace synced_DALL.Interfaces
 {
     public interface ItaskCommentRepository
     {
-        List<TaskCommentExtended> GetAllAsync(int taskId);
-
         int CreateAsync(TaskComment taskComment);
+        List<TaskCommentExtended> GetAllAsync(int taskId);
 
     }
 }

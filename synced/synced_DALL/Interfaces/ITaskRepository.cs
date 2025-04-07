@@ -10,13 +10,13 @@ namespace synced_DALL.Interfaces
 {
     public interface ITaskRepository
     {
-        List<Task> GetAllAsync(int id);
+        Task<List<Task>> GetAllAsync(int id);
 
         Task GetByIdAsync(int id);
 
-        bool CreateAsync(Task task);
+        Task<int> CreateAsync(Task task);
 
-        bool UpdateAsync(Task task);
+        Task<int> UpdateAsync(Task task);
 
         bool DeleteAsync(int id);
     }

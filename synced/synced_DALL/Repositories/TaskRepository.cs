@@ -2,12 +2,7 @@
 using synced_DAL;
 using synced_DAL.Entities;
 using synced_DALL.Interfaces;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Task = synced_DAL.Entities.Task;
 
 
@@ -22,12 +17,12 @@ namespace synced_DALL.Repositories
             _dbHelper = dbhelper; // Initialize the DatabaseHelper instance
         }
 
-        public bool CreateAsync(Task task)
+        public async Task<int> CreateAsync(Task task)
         {
             string query = @"
-                    INSERT INTO tasks (title, description, status, priority, deadline, user_id, project_id) 
-                    VALUES (@Title, @Description, @Status, @Priority, @Deadline, @User_Id, @Project_Id);
-                    SELECT SCOPE_IDENTITY();";
+                INSERT INTO tasks (title, description, status, priority, deadline, user_id, project_id) 
+                VALUES (@Title, @Description, @Status, @Priority, @Deadline, @User_Id, @Project_Id);
+                SELECT SCOPE_IDENTITY();";
 
             var parameters = new List<SqlParameter>
             {
@@ -40,7 +35,7 @@ namespace synced_DALL.Repositories
                 new SqlParameter("@Project_Id", SqlDbType.Int) { Value = task.Project_id }
             };
 
-            return _dbHelper.ExecuteNonQuery(query, parameters);
+            return  _dbHelper.ExecuteScalar(query, parameters);
         }
 
 
@@ -49,16 +44,16 @@ namespace synced_DALL.Repositories
             throw new NotImplementedException();
         }
 
-        public List<Task> GetAllAsync(int id)
+        public async Task<List<Task>> GetAllAsync(int projectId)
         {
-            string query = "SELECT * FROM dbo.tasks WHERE project_id = @projectId";
+            string query = "SELECT * FROM tasks WHERE project_id = @projectId";
 
             var parameters = new List<SqlParameter>
             {
-                new SqlParameter("@projectId", SqlDbType.Int) { Value = id }
+                new SqlParameter("@projectId", SqlDbType.Int) { Value = projectId }
             };
 
-            return _dbHelper.ExecuteReader(query, parameters, reader =>
+            return  _dbHelper.ExecuteReader(query, parameters, reader =>
             {
                 return new Task
                 {
@@ -74,12 +69,13 @@ namespace synced_DALL.Repositories
             });
         }
 
+
         public synced_DAL.Entities.Task GetByIdAsync(int id)
         {
             throw new NotImplementedException();
         }
 
-        public bool UpdateAsync(Task task)
+        public async Task<int> UpdateAsync(Task task)
         {
             string query = @"
             UPDATE tasks SET 
@@ -96,8 +92,8 @@ namespace synced_DALL.Repositories
             {
                 new SqlParameter("@Title", SqlDbType.NVarChar) { Value = task.Title },
                 new SqlParameter("@Description", SqlDbType.NVarChar) { Value = task.Description },
-                new SqlParameter("@Status", SqlDbType.NVarChar) { Value = task.Status },
-                new SqlParameter("@Priority", SqlDbType.NVarChar) { Value = task.Priority },
+                new SqlParameter("@Status", SqlDbType.Int) { Value = task.Status },
+                new SqlParameter("@Priority", SqlDbType.Int) { Value = task.Priority },
                 new SqlParameter("@Deadline", SqlDbType.DateTime) { Value = task.Deadline },
                 new SqlParameter("@User_Id", SqlDbType.Int) { Value = (object?)task.User_id ?? DBNull.Value },
                 new SqlParameter("@Project_Id", SqlDbType.Int) { Value = task.Project_id },
@@ -106,6 +102,5 @@ namespace synced_DALL.Repositories
 
             return _dbHelper.ExecuteNonQuery(query, parameters);
         }
-
     }
 }

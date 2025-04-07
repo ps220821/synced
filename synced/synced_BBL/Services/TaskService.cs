@@ -27,7 +27,7 @@ namespace synced_BBL.Services
         {
             try
             {
-                List<Task> tasks = _taskRepository.GetAllAsync(projectId);
+                List<Task> tasks = await _taskRepository.GetAllAsync(projectId);
 
                 List<TaskDto> taskDtos = tasks.Select(task => new TaskDto
                 {
@@ -38,7 +38,7 @@ namespace synced_BBL.Services
                     Priority = task.Priority,
                     Deadline = task.Deadline,
                     Project_id = task.Project_id,
-                    User_id = task.User_id,
+                    User_id = task.User_id
                 }).ToList();
 
                 TaskGroupDto taskGroup = GetTasksGroupedByStatus(taskDtos);
@@ -57,7 +57,6 @@ namespace synced_BBL.Services
             {
                 return OperationResult<TaskGroupDto>.Failure("An unexpected error occurred while fetching tasks.");
             }
-
         }
 
         public TaskGroupDto GetTasksGroupedByStatus(List<TaskDto> tasks)
@@ -78,32 +77,32 @@ namespace synced_BBL.Services
         {
             try
             {
-                Task newTask = Mapper.MapCreate<Task>(task);
+                if (task == null) return OperationResult<bool>.Failure("Task cannot be null.");
 
-                // Call CreateAsync and await the result
-                bool result = this._taskRepository.CreateAsync(newTask);
-                if (result)
+                Task newTask = Mapper.MapCreate<Task>(task);
+                int newTaskId = await _taskRepository.CreateAsync(newTask);
+
+                if (newTaskId > 0)
                 {
-                    return OperationResult<bool>.Success(true);  // Successfully created
+                    return OperationResult<bool>.Success(true); // Successfully created
                 }
                 else
                 {
-                    return OperationResult<bool>.Failure("Task could not be created.");  // Creation failed
+                    return OperationResult<bool>.Failure("Task could not be created.");
                 }
             }
             catch (DatabaseException ex)
             {
-                return OperationResult<bool>.Failure(ex.Message);  // Handle DatabaseException
+                return OperationResult<bool>.Failure(ex.Message);
             }
             catch (SqlException ex)
             {
-                return OperationResult<bool>.Failure(DatabaseHelper.GetErrorMessage(ex));  // Handle SQL errors
+                return OperationResult<bool>.Failure(DatabaseHelper.GetErrorMessage(ex));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return OperationResult<bool>.Failure("An unexpected error occurred while creating the task.");  // Handle other errors
+                return OperationResult<bool>.Failure("An unexpected error occurred while creating the task.");
             }
-
         }
 
         public Task<OperationResult<bool>> DeleteTask(int id)
@@ -115,35 +114,34 @@ namespace synced_BBL.Services
         {
             try
             {
-                Task updatedTask = Mapper.MapCreate<Task>(task);
+                if (task == null) return OperationResult<bool>.Failure("Task cannot be null.");
 
-                // Update the task's status and priority
+                Task updatedTask = Mapper.MapCreate<Task>(task);
                 updatedTask.Status = task.Status;
                 updatedTask.Priority = task.Priority;
 
-                // Call UpdateAsync and await the result
-                bool success =  this._taskRepository.UpdateAsync(updatedTask);
+                int rowsAffected = await _taskRepository.UpdateAsync(updatedTask);
 
-                if (success)
+                if (rowsAffected > 0)
                 {
-                    return OperationResult<bool>.Success(true);  // Successfully updated
+                    return OperationResult<bool>.Success(true); // Successfully updated
                 }
                 else
                 {
-                    return OperationResult<bool>.Failure("Task could not be updated.");  // Update failed
+                    return OperationResult<bool>.Failure("Task could not be updated or does not exist.");
                 }
             }
             catch (DatabaseException ex)
             {
-                return OperationResult<bool>.Failure(ex.Message);  // Handle DatabaseException
+                return OperationResult<bool>.Failure(ex.Message);
             }
             catch (SqlException ex)
             {
-                return OperationResult<bool>.Failure(DatabaseHelper.GetErrorMessage(ex));  // Handle SQL errors
+                return OperationResult<bool>.Failure(DatabaseHelper.GetErrorMessage(ex));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return OperationResult<bool>.Failure("An unexpected error occurred while updating the task.");  // Handle other errors
+                return OperationResult<bool>.Failure("An unexpected error occurred while updating the task.");
             }
 
         }

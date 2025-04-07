@@ -17,7 +17,7 @@ namespace synced_DAL
             return connection;
         }
 
-        public bool ExecuteNonQuery(string query, List<SqlParameter> parameters)
+        public int ExecuteNonQuery(string query, List<SqlParameter> parameters)
         {
             try
             {
@@ -27,7 +27,7 @@ namespace synced_DAL
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
                         command.Parameters.AddRange(parameters.ToArray());
-                        return command.ExecuteNonQuery() > 0;
+                        return command.ExecuteNonQuery() ;
                     }
                 }
             }

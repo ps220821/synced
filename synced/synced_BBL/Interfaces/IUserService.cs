@@ -11,7 +11,7 @@ namespace synced_BBL.Interfaces
 {
     public interface IUserService
     {
-        public int GetUserBYEmail(string email);
+        Task<int> GetUserByEmail(string email);
         Task<OperationResult<int>> RegisterUser(UserDto userDto);
         Task<OperationResult<int>> LoginUser(LoginDto login);
     }

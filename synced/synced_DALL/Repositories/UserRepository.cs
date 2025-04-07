@@ -23,24 +23,7 @@ namespace synced_DAL.Repositories
             this._dbHelper = dbhelper;
         }
 
-        public int  GetUserByEmail(string email)
-        {
-            string query = "SELECT id FROM users WHERE email = @Email;";
-
-
-            var parameters = new List<SqlParameter>
-            {
-                new SqlParameter("@Email", SqlDbType.VarChar) { Value = email },
-            };
-
-            int userId = _dbHelper.ExecuteScalar(query, parameters);
-
-            return userId;
-        }
-
-
-
-        public OperationResult<int> Login(string email, string password)
+        public async Task<int> Login(string email, string password)
         {
             
                 string query = "SELECT id FROM users WHERE email = @Email AND password = @Password";
@@ -50,34 +33,24 @@ namespace synced_DAL.Repositories
                     new SqlParameter("@Password", SqlDbType.VarChar) { Value = password }
                 };
 
-                int userId = _dbHelper.ExecuteScalar(query, parameters);
-
-                // Returning the correct generic OperationResult<int>
-                if (userId == 0)
-                {
-                    return OperationResult<int>.Failure("Invalid email or password.");
-                }
-
-                return OperationResult<int>.Success(userId); // Correct type for OperationResult<int>
-            
+                return (int) _dbHelper.ExecuteScalar(query, parameters);
         }
 
-        public OperationResult<int> Register(User user)
+        public async Task<int> CheckEmailExists(string email)
         {
-            string checkEmailQuery = "SELECT COUNT(*) FROM users WHERE email = @Email";
-            var checkEmailParameters = new List<SqlParameter>
+            string query = "SELECT id FROM users WHERE email = @Email;";
+
+            var parameters = new List<SqlParameter>
             {
-                new SqlParameter("@Email", SqlDbType.VarChar) { Value = user.email }
+                new SqlParameter("@Email", SqlDbType.VarChar) { Value = email },
             };
 
-            int existingUserCount = _dbHelper.ExecuteScalar(checkEmailQuery, checkEmailParameters);
 
-            if (existingUserCount > 0)
-            {
-                return OperationResult<int>.Failure("Email already exists.");
-            }
+            return (int) _dbHelper.ExecuteScalar(query, parameters);
+        }
 
-
+        public async Task<int> Register(User user)
+        {
             string insertQuery = "INSERT INTO users (username, firstname, lastname, email, password, created_at) " +
                                  "VALUES (@Username, @Firstname, @Lastname, @Email, @Password, @CreatedAt)";
             var insertParameters = new List<SqlParameter>
@@ -89,15 +62,7 @@ namespace synced_DAL.Repositories
                 new SqlParameter("@Password", SqlDbType.VarChar) { Value = user.password },
                 new SqlParameter("@CreatedAt", SqlDbType.DateTime) { Value = DateTime.Now }
             };
-
-            int newuser = _dbHelper.ExecuteScalar(insertQuery, insertParameters);
-
-            if (newuser < 0)
-            {
-                return OperationResult<int>.Failure("Failed to register, try again");
-            }
-
-            return OperationResult<int>.Success(newuser);
+            return (int)_dbHelper.ExecuteScalar(insertQuery, insertParameters);
         }
     }
 }

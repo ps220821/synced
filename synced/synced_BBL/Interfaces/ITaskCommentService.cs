@@ -1,4 +1,5 @@
-﻿using synced_BBL.Dtos;
+﻿using synced.Core.Results;
+using synced_BBL.Dtos;
 using synced_DAL.Entities;
 using System;
 using System.Collections.Generic;
@@ -10,9 +11,8 @@ namespace synced_BBL.Interfaces
 {
     public interface ITaskCommentService
     {
-        List<TaskCommentExtendedDto> GetTaskComments(int taskId);
-
-        int AddComment(TaskCommentDto taskComment);
+        Task<OperationResult<int>> AddComment(TaskCommentDto taskComment);
+        Task<OperationResult<List<TaskCommentExtendedDto>>> GetTaskComments(int taskId);
 
     }
 }

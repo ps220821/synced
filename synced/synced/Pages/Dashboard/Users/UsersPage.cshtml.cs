@@ -45,7 +45,7 @@ namespace synced.Pages.Dashboard.Users
 
             if (!string.IsNullOrEmpty(NewUserEmail))
             {
-                int userId = _userService.GetUserBYEmail(NewUserEmail);
+                int userId = await _userService.GetUserByEmail(NewUserEmail);
 
                 if (userId > 0 && ProjectId > 0)
                 {
