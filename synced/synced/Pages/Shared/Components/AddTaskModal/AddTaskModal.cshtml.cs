@@ -42,7 +42,17 @@ namespace synced.Pages.Shared.Components.AddTaskModal
             newTask.Users = userDtoList;
 
             int taskId = task?.Id ?? 0;
-            comments = taskId > 0 ? _taskCommentService.GetTaskComments(taskId) : new List<TaskCommentExtendedDto>();
+
+            if (taskId > 0)
+            {
+                var result = await _taskCommentService.GetTaskComments(taskId);
+                comments = result.Succeeded ? result.Data : new List<TaskCommentExtendedDto>();
+            }
+            else
+            {
+                comments = new List<TaskCommentExtendedDto>();
+            }
+
 
             // ✅ Ensure taskCardModel is properly initialized
             taskCardModel = newTask ?? new AddTaskCardModel();

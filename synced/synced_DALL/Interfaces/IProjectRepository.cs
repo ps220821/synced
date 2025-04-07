@@ -18,6 +18,6 @@ namespace synced_DALL.Interfaces
 
         bool UpdateAsync(Project entity);
 
-        bool DeleteAsync(int id);
+        int DeleteAsync(int id);
     }
 }

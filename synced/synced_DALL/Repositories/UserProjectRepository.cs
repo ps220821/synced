@@ -19,22 +19,27 @@ namespace synced_DALL.Repositories
             _dbHelper = databaseHelper;
         }
 
-        public List<User> GetAllUsers(int projectId)
+        public async Task<List<User>> GetAllUsers(int projectId)
         {
-            string query = @" SELECT u.* FROM project_users pu INNER JOIN users u ON pu.user_id = u.id WHERE pu.project_id = @projectId";
+            string query = @"
+                SELECT u.*
+                FROM project_users pu
+                INNER JOIN users u ON pu.user_id = u.id
+                WHERE pu.project_id = @ProjectId";
+
             var parameters = new List<SqlParameter>
             {
-                new SqlParameter("@projectId", SqlDbType.Int) { Value = projectId }
+                new SqlParameter("@ProjectId", SqlDbType.Int) { Value = projectId }
             };
 
-            return _dbHelper.ExecuteReader(query, parameters, reader =>
+            return  _dbHelper.ExecuteReader(query, parameters, reader =>
             {
                 return new User
                 {
                     id = reader.GetInt32(reader.GetOrdinal("id")),
                     username = reader.GetString(reader.GetOrdinal("username")),
-                    firstname = reader.GetString(reader.GetOrdinal("firstname")),
-                    lastname = reader.GetString(reader.GetOrdinal("lastname")),
+                    firstname = reader.IsDBNull(reader.GetOrdinal("firstname")) ? null : reader.GetString(reader.GetOrdinal("firstname")),
+                    lastname = reader.IsDBNull(reader.GetOrdinal("lastname")) ? null : reader.GetString(reader.GetOrdinal("lastname")),
                     email = reader.GetString(reader.GetOrdinal("email")),
                     password = reader.GetString(reader.GetOrdinal("password")),
                     created_at = reader.GetDateTime(reader.GetOrdinal("created_at"))
@@ -42,23 +47,27 @@ namespace synced_DALL.Repositories
             });
         }
 
-        public bool AddUserToProject(Project_users projectUser)
+        public async Task<int> AddUserToProject(Project_users projectUser)
         {
-            string query = "INSERT INTO project_Users (project_id, user_id, roles) VALUES (@ProjectId, @UserId, @Roles);";
+            string query = @"
+                INSERT INTO project_users (project_id, user_id, roles)
+                VALUES (@ProjectId, @UserId, @Roles);";
 
             var parameters = new List<SqlParameter>
             {
                 new SqlParameter("@ProjectId", SqlDbType.Int) { Value = projectUser.project_id },
                 new SqlParameter("@UserId", SqlDbType.Int) { Value = projectUser.user_id },
-                new SqlParameter("@Roles", SqlDbType.NVarChar, 50) { Value =  (int)projectUser.roles }
+                new SqlParameter("@Roles", SqlDbType.Int) { Value = (int)projectUser.roles }
             };
 
-            return _dbHelper.ExecuteNonQuery(query, parameters);
+            return (int)_dbHelper.ExecuteNonQuery(query, parameters);
         }
 
-        public bool RemoveUserFromProject(int userId, int projectId)
+        public async Task<int> RemoveUserFromProject(int userId, int projectId)
         {
-            string query = "DELETE FROM project_Users WHERE project_id = @ProjectId AND user_id = @UserId;";
+            string query = @"
+                DELETE FROM project_users
+                WHERE project_id = @ProjectId AND user_id = @UserId;";
 
             var parameters = new List<SqlParameter>
             {
@@ -66,7 +75,7 @@ namespace synced_DALL.Repositories
                 new SqlParameter("@UserId", SqlDbType.Int) { Value = userId }
             };
 
-            return _dbHelper.ExecuteNonQuery(query, parameters);
+            return (int)_dbHelper.ExecuteNonQuery(query, parameters);
         }
     }
 }

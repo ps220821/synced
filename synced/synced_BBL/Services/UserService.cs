@@ -24,9 +24,9 @@ namespace synced_BBL.Services
             _userRepository = userRepository;
         }
 
-        public int GetUserBYEmail(string email)
+        public async Task<int> GetUserByEmail(string email)
         {
-            return this._userRepository.GetUserByEmail(email);
+            return await _userRepository.CheckEmailExists(email);
         }
 
         public async Task<OperationResult<int>> LoginUser(LoginDto login)
@@ -38,14 +38,14 @@ namespace synced_BBL.Services
                     return OperationResult<int>.Failure("Email and password must not be empty.");
                 }
 
-                var result = _userRepository.Login(login.email, login.password);
+                int userId = await _userRepository.Login(login.email, login.password);
 
-                if (result.Succeeded)
+                if (userId > 0)
                 {
-                    return OperationResult<int>.Success(result.Data);
+                    return OperationResult<int>.Success(userId);
                 }
 
-                return result;
+                return OperationResult<int>.Failure("Invalid email or password.");
             }
             catch (DatabaseException ex)
             {
@@ -65,21 +65,41 @@ namespace synced_BBL.Services
         {
             try
             {
-                var mappedUser = Mapper.MapCreate<User>(userDto);
+                if (userDto == null)
+                {
+                    return OperationResult<int>.Failure("User data cannot be null.");
+                }
 
-                // Check if the mappedUser is null
+                if (string.IsNullOrEmpty(userDto.Email))
+                {
+                    return OperationResult<int>.Failure("Email cannot be empty.");
+                }
+
+                if (string.IsNullOrEmpty(userDto.Password))
+                {
+                    return OperationResult<int>.Failure("Password cannot be empty.");
+                }
+
+                int existingUserId = await GetUserByEmail(userDto.Email);
+                if (existingUserId > 0)
+                {
+                    return OperationResult<int>.Failure("Email already exists.");
+                }
+
+                var mappedUser = Mapper.MapCreate<User>(userDto);
                 if (mappedUser == null)
                 {
                     return OperationResult<int>.Failure("User mapping failed.");
                 }
-                var result = _userRepository.Register(mappedUser);
 
-                if (result.Succeeded)
+                int newUserId = await _userRepository.Register(mappedUser);
+
+                if (newUserId > 0)
                 {
-                    return OperationResult<int>.Success(result.Data);
+                    return OperationResult<int>.Success(newUserId);
                 }
 
-                return result;
+                return OperationResult<int>.Failure("Failed to register user.");
             }
             catch (DatabaseException ex)
             {

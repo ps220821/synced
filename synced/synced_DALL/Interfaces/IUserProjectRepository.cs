@@ -9,10 +9,8 @@ namespace synced_DALL.Interfaces
 {
     public interface IUserProjectRepository
     {
-        List<User> GetAllUsers(int projectId);
-
-        bool AddUserToProject(Project_users projectUser);
-
-        bool RemoveUserFromProject(int userId, int projectId);
+        Task<List<User>> GetAllUsers(int projectId);
+        Task<int> AddUserToProject(Project_users projectUser);
+        Task<int> RemoveUserFromProject(int userId, int projectId);
     }
 }

@@ -100,26 +100,29 @@ using synced_DAL.Entities;
                     created_at = DateTime.Now,
                 };
 
-                this._taskCommentService.AddComment(NewComment);
+                await _taskCommentService.AddComment(NewComment);
 
-                // Return alleen de comments partial
-                var updatedComments = _taskCommentService.GetTaskComments(taskId);
-                return Partial("/Pages/Shared/Components/AddTaskModal/CommentsList.cshtml", updatedComments);
+                var result = await _taskCommentService.GetTaskComments(taskId);
+
+                if (result.Succeeded)
+                {
+                    var updatedComments = result.Data; 
+                    return Partial("/Pages/Shared/Components/AddTaskModal/CommentsList.cshtml", updatedComments);
+                }
+                return BadRequest(result.Message);
             }
-            return BadRequest();
+            return BadRequest("Invalid input.");
         }
 
 
         public async Task<OperationResult<bool>> CreateTask(TaskDto taskDto)
         {
-            // Call CreateTask in service
-            return await this._taskService.CreateTask(taskDto);  // Returns the result of task creation
+            return await this._taskService.CreateTask(taskDto);  
         }
 
         public async Task<OperationResult<bool>> UpdateTask(TaskDto taskDto)
         {
-            // Call UpdateTask in service
-            return await this._taskService.UpdateTask(taskDto);  // Returns the result of task update
+            return await this._taskService.UpdateTask(taskDto);
         }
 
 

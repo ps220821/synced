@@ -42,17 +42,13 @@ namespace synced_BBL.Services
 
                 return OperationResult<List<ProjectDto>>.Success(projectDtos);
             }
-            catch (DatabaseException ex)
-            {
-                return OperationResult<List<ProjectDto>>.Failure(ex.Message);
-            }
             catch (SqlException ex)
             {
                 return OperationResult<List<ProjectDto>>.Failure(DatabaseHelper.GetErrorMessage(ex));
             }
             catch (Exception)
             {
-                return OperationResult<List<ProjectDto>>.Failure("An unexpected error occurred while adding user to project.");
+                return OperationResult<List<ProjectDto>>.Failure("Unexpected error while fetching projects.");
             }
         }
 
@@ -61,32 +57,26 @@ namespace synced_BBL.Services
             try
             {
                 var mappedProject = Mapper.MapCreate<Project>(project);
-
                 if (mappedProject == null)
+                    return OperationResult<bool>.Failure("Project mapping failed.");
+
+                int newProjectId = _projectRepository.CreateAsync(mappedProject);
+
+                if (newProjectId <= 0)
+                    return OperationResult<bool>.Failure("Project could not be created.");
+
+                var projectUser = new Project_users
                 {
-                    return OperationResult<bool>.Failure("Mapping failed.");
-                }
+                    user_id = mappedProject.Owner,
+                    project_id = newProjectId,
+                    roles = Roles.admin // Zorg dat Roles een enum of constant is
+                };
 
-                int newProject = _projectRepository.CreateAsync(mappedProject);
+                int rowsAffected = await _userProjectRepository.AddUserToProject(projectUser);
 
-                if (newProject > 0)
-                {
-                    Project_users projectUser = new Project_users
-                    {
-                        user_id = mappedProject.Owner,
-                        project_id = newProject,
-                        roles = Roles.admin,
-                    };
-
-                    bool added = _userProjectRepository.AddUserToProject(projectUser);
-                    return OperationResult<bool>.Success(added);
-                }
-
-                return OperationResult<bool>.Failure("Project could not be created.");
-            }
-            catch (DatabaseException ex)
-            {
-                return OperationResult<bool>.Failure(ex.Message);
+                return rowsAffected > 0
+                    ? OperationResult<bool>.Success(true)
+                    : OperationResult<bool>.Failure("User could not be added to project.");
             }
             catch (SqlException ex)
             {
@@ -94,7 +84,7 @@ namespace synced_BBL.Services
             }
             catch (Exception)
             {
-                return OperationResult<bool>.Failure("An unexpected error occurred while adding user to project.");
+                return OperationResult<bool>.Failure("Unexpected error while creating project.");
             }
         }
 
@@ -102,18 +92,12 @@ namespace synced_BBL.Services
         {
             try
             {
-                bool deleted = _projectRepository.DeleteAsync(id);
+                int rowsAffected = _projectRepository.DeleteAsync(id);
 
-                if (deleted)
-                {
-                    return OperationResult<bool>.Success(true);
-                }
+                if (rowsAffected == 0)
+                    return OperationResult<bool>.Failure("No project found to delete.");
 
-                return OperationResult<bool>.Failure("Project could not be deleted.");
-            }
-            catch (DatabaseException ex)
-            {
-                return OperationResult<bool>.Failure(ex.Message);
+                return OperationResult<bool>.Success(true);
             }
             catch (SqlException ex)
             {
@@ -121,7 +105,7 @@ namespace synced_BBL.Services
             }
             catch (Exception)
             {
-                return OperationResult<bool>.Failure("An unexpected error occurred while adding user to project.");
+                return OperationResult<bool>.Failure("Unexpected error while deleting project.");
             }
         }
     }
