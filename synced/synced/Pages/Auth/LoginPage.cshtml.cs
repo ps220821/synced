@@ -6,7 +6,7 @@ using synced.Core.Results;
 using synced_BBL.Dtos;
 using synced_BBL.Interfaces;
 using synced_BBL.Services;
-using synced_DAL.Entities;
+using synced_DALL.Entities;
 
 
 namespace synced.Pages

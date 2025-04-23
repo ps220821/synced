@@ -10,7 +10,7 @@ namespace synced_BBL.Interfaces
 {
     public interface IProjectUserService
     {
-        Task<OperationResult<bool>> AddUserToProject(int projectId, int userId);
+        Task<OperationResult<bool>> AddUserToProject(int projectId, int userId, string email);
         Task<OperationResult<bool>> RemoveUserFromProject(int userId, int projectId);
         Task<OperationResult<List<UserDto>>> GetAllUsers(int projectId);
     }

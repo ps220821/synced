@@ -1,4 +1,4 @@
-﻿using synced_DAL.Entities;
+﻿using synced_DALL.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +9,6 @@ namespace synced_DALL.Entities
 {
     public class TaskCommentExtended : TaskComment
     {
-       public string username { get; set; }
+       public string Username { get; set; }
     }
 }

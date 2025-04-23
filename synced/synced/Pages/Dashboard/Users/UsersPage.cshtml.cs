@@ -49,7 +49,7 @@ namespace synced.Pages.Dashboard.Users
 
                 if (userId > 0 && ProjectId > 0)
                 {
-                    OperationResult<bool> result = await _projectUserService.AddUserToProject(ProjectId, userId);
+                    OperationResult<bool> result = await _projectUserService.AddUserToProject(ProjectId, userId, NewUserEmail);
 
                     if (result.Succeeded && result.Data)
                     {

@@ -42,7 +42,7 @@ namespace synced.Pages.Dashboard.Projects
             }
             else
             {
-                ModelState.AddModelError(string.Empty, result.Message ?? "Projecten ophalen mislukt.");
+                ModelState.AddModelError(string.Empty, result.Message ?? "Could not get projects");
             }
 
             return Page();

@@ -1,4 +1,4 @@
-﻿using synced_DAL.Entities;
+﻿using synced_DALL.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +9,8 @@ namespace synced_DALL.Interfaces
 {
     public interface IUserProjectRepository
     {
-        Task<List<User>> GetAllUsers(int projectId);
-        Task<int> AddUserToProject(Project_users projectUser);
+        Task<List<ProjectUsers>> GetProjectUsers(int projectId);
+        Task<int> AddUserToProject(ProjectUsers projectUser);
         Task<int> RemoveUserFromProject(int userId, int projectId);
     }
 }

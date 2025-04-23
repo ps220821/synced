@@ -3,7 +3,7 @@ using synced.Core.Results;
 using synced_BBL.Dtos;
 using synced_BBL.Interfaces;
 using synced_DAL;
-using synced_DAL.Entities;
+using synced_DALL.Entities;
 using synced_DALL.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -28,7 +28,7 @@ namespace synced_BBL.Services
         {
             try
             {
-                var projects = _projectRepository.GetAllAsync(id);
+                var projects = await _projectRepository.GetAllAsync(id);  // Zorg ervoor dat GetAllAsync een Task<List<Project>> retourneert
 
                 var projectDtos = projects.Select(project => new ProjectDto
                 {
@@ -60,16 +60,16 @@ namespace synced_BBL.Services
                 if (mappedProject == null)
                     return OperationResult<bool>.Failure("Project mapping failed.");
 
-                int newProjectId = _projectRepository.CreateAsync(mappedProject);
+                int newProjectId = await _projectRepository.CreateAsync(mappedProject);
 
                 if (newProjectId <= 0)
                     return OperationResult<bool>.Failure("Project could not be created.");
 
-                var projectUser = new Project_users
+                var projectUser = new ProjectUsers
                 {
-                    user_id = mappedProject.Owner,
-                    project_id = newProjectId,
-                    roles = Roles.admin // Zorg dat Roles een enum of constant is
+                    UserId = mappedProject.Owner,
+                    ProjectId = newProjectId,
+                    Role = Roles.admin // Zorg dat Roles een enum of constant is
                 };
 
                 int rowsAffected = await _userProjectRepository.AddUserToProject(projectUser);
@@ -92,7 +92,7 @@ namespace synced_BBL.Services
         {
             try
             {
-                int rowsAffected = _projectRepository.DeleteAsync(id);
+                int rowsAffected = await _projectRepository.DeleteAsync(id);
 
                 if (rowsAffected == 0)
                     return OperationResult<bool>.Failure("No project found to delete.");

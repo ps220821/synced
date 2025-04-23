@@ -1,47 +1,47 @@
-    using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.Mvc.RazorPages;
-    using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.IdentityModel.Tokens;
 using synced.Core.Results;
 using synced.Models;
-    using synced_BBL.Dtos;
-    using synced_BBL.Interfaces;
-using synced_DAL.Entities;
-    using velocitaApi.Mappers;
+using synced_BBL.Dtos;
+using synced_BBL.Interfaces;
+using synced_DALL.Entities;
+using velocitaApi.Mappers;
 
-    namespace synced.Pages.Dashboard
+namespace synced.Pages.Dashboard
+{
+    public class IndexModel : PageModel
     {
-        public class IndexModel : PageModel
+        private readonly ITaskService _taskService;
+        private readonly ITaskCommentService _taskCommentService;
+
+        public TaskGroupDto _tasks;
+
+        [BindProperty(SupportsGet = true)]
+        public int? ProjectId { get; set; }  // Changed from Id to ProjectId
+
+
+        [BindProperty]
+        public AddTaskViewModel TaskCard { get; set; }
+
+        public IndexModel(ITaskService taskService, ITaskCommentService taskCommentService)
         {
-            private readonly ITaskService _taskService;
-            private readonly ITaskCommentService _taskCommentService;
-
-            public TaskGroupDto _tasks;
-
-            [BindProperty(SupportsGet = true)]
-            public int? ProjectId { get; set; }  // Changed from Id to ProjectId
+            this._taskService = taskService;
+            this._taskCommentService = taskCommentService;
+            this._tasks = new TaskGroupDto();
+            this.TaskCard = new AddTaskViewModel();
+        }
 
 
-            [BindProperty]
-            public AddTaskViewModel TaskCard { get; set; } 
-
-            public IndexModel(ITaskService taskService, ITaskCommentService taskCommentService)
+        public async System.Threading.Tasks.Task OnGetAsync(int projectId)
+        {
+            if (this.ProjectId.HasValue)
             {
-                this._taskService = taskService;
-                this._taskCommentService = taskCommentService;   
-                this._tasks = new TaskGroupDto();
-                this.TaskCard = new AddTaskViewModel();
-            }
-
-
-            public async void OnGet(int projectId)
-            {
-                if(this.ProjectId.HasValue)
-                {
-                    ProjectId = projectId;
-                    ViewData["ProjectId"] = projectId; // Slaat de ID op voor de layout.
-                    OperationResult<TaskGroupDto> result = await _taskService.GetAllTasks(projectId);
+                ProjectId = projectId;
+                ViewData["ProjectId"] = projectId; // Slaat de ID op voor de layout.
+                OperationResult<TaskGroupDto> result = await _taskService.GetAllTasks(projectId);
 
                 if (result.Succeeded)
                 {
@@ -57,31 +57,31 @@ using synced_DAL.Entities;
                 }
             }
 
-                if (_tasks == null)
-                {
-                    _tasks = new TaskGroupDto();  // Or any appropriate default collection
-                }
-
-                HttpContext.Session.SetInt32("ProjectId", (int)ProjectId);
+            if (_tasks == null)
+            {
+                _tasks = new TaskGroupDto();  // Of een andere standaardwaarde
             }
+
+             HttpContext.Session.SetInt32("ProjectId", (int)ProjectId);
+        }
 
         public async Task<IActionResult> OnPostAsync()
         {
             TaskDto taskDto = Mapper.MapCreate<TaskDto>(this.TaskCard.Task);
             taskDto.Deadline = new DateTime(1753, 1, 1);
-            taskDto.Project_id = this.ProjectId.Value;
+            taskDto.ProjectId = this.ProjectId.Value;
 
             if (TaskCard.Task.Id <= 0)
             {
                 OperationResult<bool> createResult = await CreateTask(taskDto);
-                if (createResult.Succeeded) return RedirectToPage();  
-                TempData["ErrorMessage"] = createResult.Message; 
+                if (createResult.Succeeded) return RedirectToPage();
+                TempData["ErrorMessage"] = createResult.Message;
             }
             else
             {
                 OperationResult<bool> updateResult = await UpdateTask(taskDto);
-                if (updateResult.Succeeded) return RedirectToPage();  
-                TempData["ErrorMessage"] = updateResult.Message;  
+                if (updateResult.Succeeded) return RedirectToPage();
+                TempData["ErrorMessage"] = updateResult.Message;
             }
 
             return RedirectToPage();
@@ -94,10 +94,11 @@ using synced_DAL.Entities;
                 var currentUserId = HttpContext.Session.GetInt32("UserId") ?? 0;
                 TaskCommentDto NewComment = new TaskCommentDto
                 {
-                    task_id = taskId,
-                    user_id = currentUserId,
-                    comment = commentText,
-                    created_at = DateTime.Now,
+                    Id = taskId,
+                    TaskId = taskId,
+                    UserId = currentUserId,
+                    Comment = commentText,
+                    CreatedAt = DateTime.Now,
                 };
 
                 await _taskCommentService.AddComment(NewComment);
@@ -106,7 +107,7 @@ using synced_DAL.Entities;
 
                 if (result.Succeeded)
                 {
-                    var updatedComments = result.Data; 
+                    var updatedComments = result.Data;
                     return Partial("/Pages/Shared/Components/AddTaskModal/CommentsList.cshtml", updatedComments);
                 }
                 return BadRequest(result.Message);
@@ -117,7 +118,7 @@ using synced_DAL.Entities;
 
         public async Task<OperationResult<bool>> CreateTask(TaskDto taskDto)
         {
-            return await this._taskService.CreateTask(taskDto);  
+            return await this._taskService.CreateTask(taskDto);
         }
 
         public async Task<OperationResult<bool>> UpdateTask(TaskDto taskDto)

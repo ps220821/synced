@@ -1,4 +1,4 @@
-﻿using synced_DAL.Entities;
+﻿using synced_DALL.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -3,14 +3,14 @@ using synced.Core.Results;
 using synced_BBL.Dtos;
 using synced_BBL.Interfaces;
 using synced_DAL;
-using synced_DAL.Entities;
+using synced_DALL.Entities;
 using synced_DALL.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using velocitaApi.Mappers;
-using Task = synced_DAL.Entities.Task;
+using Task = synced_DALL.Entities.Task;
 
 
 namespace synced_BBL.Services
@@ -37,8 +37,8 @@ namespace synced_BBL.Services
                     Status = task.Status,
                     Priority = task.Priority,
                     Deadline = task.Deadline,
-                    Project_id = task.Project_id,
-                    User_id = task.User_id
+                    ProjectId = task.ProjectId,
+                    UserId = task.UserId
                 }).ToList();
 
                 TaskGroupDto taskGroup = GetTasksGroupedByStatus(taskDtos);
