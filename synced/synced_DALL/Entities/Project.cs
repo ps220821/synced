@@ -15,7 +15,6 @@ namespace synced_DALL.Entities
         public DateOnly Start_Date { get; set; }
         public DateOnly End_Date { get;  set; }
         public int Owner { get; set; }
-
         public User User { get; set; }
     }
 }
