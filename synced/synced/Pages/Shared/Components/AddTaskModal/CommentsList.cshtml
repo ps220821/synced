@@ -6,13 +6,13 @@
 
 @foreach (var comment in Model)
 {
-    <div class="d-flex mb-3  @(comment.user_id == currentUserId ? "justify-content-end" : "justify-content-start")">
-        <div class="p-2 border rounded @(comment.user_id == currentUserId ? "bg-primary text-white" : "bg-light")">
+    <div class="d-flex mb-3  @(comment.UserId == currentUserId ? "justify-content-end" : "justify-content-start")">
+        <div class="p-2 border rounded @(comment.UserId == currentUserId ? "bg-primary text-white" : "bg-light")">
             <div class="d-flex justify-content-between  gap-5">
-                <strong>@comment.username</strong>
-                <small>@comment.created_at.ToString("dd-MM-yyyy HH")</small>
+                <strong>@comment.Username</strong>
+                <small>@comment.CreatedAt.ToString("dd-MM-yyyy HH")</small>
             </div>
-            <p class="mb-0">@comment.comment</p>
+            <p class="mb-0">@comment.Comment</p>
         </div>
     </div>
 }

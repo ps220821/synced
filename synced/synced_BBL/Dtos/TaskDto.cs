@@ -1,4 +1,4 @@
-﻿using synced_DAL.Entities;
+﻿using synced_DALL.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,9 +21,9 @@ namespace synced_BBL.Dtos
 
         public DateTime Deadline { get; set; }
 
-        public int? User_id { get; set; }
+        public int? UserId { get; set; }
 
-        public int Project_id { get; set; }
+        public int ProjectId { get; set; }
 
     }
 }

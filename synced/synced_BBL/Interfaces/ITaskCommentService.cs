@@ -1,6 +1,6 @@
 ﻿using synced.Core.Results;
 using synced_BBL.Dtos;
-using synced_DAL.Entities;
+using synced_DALL.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,4 +1,4 @@
-﻿using synced_DAL.Entities;
+﻿using synced_DALL.Entities;
 using synced_DAL.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -33,7 +33,7 @@ namespace synced_DAL.Repositories
                     new SqlParameter("@Password", SqlDbType.VarChar) { Value = password }
                 };
 
-                return (int) _dbHelper.ExecuteScalar(query, parameters);
+                return await _dbHelper.ExecuteScalar<int>(query, parameters);
         }
 
         public async Task<int> CheckEmailExists(string email)
@@ -46,7 +46,7 @@ namespace synced_DAL.Repositories
             };
 
 
-            return (int) _dbHelper.ExecuteScalar(query, parameters);
+            return await _dbHelper.ExecuteScalar<int>(query, parameters);
         }
 
         public async Task<int> Register(User user)
@@ -55,14 +55,14 @@ namespace synced_DAL.Repositories
                                  "VALUES (@Username, @Firstname, @Lastname, @Email, @Password, @CreatedAt)";
             var insertParameters = new List<SqlParameter>
             {
-                new SqlParameter("@Username", SqlDbType.VarChar) { Value = user.username },
-                new SqlParameter("@Firstname", SqlDbType.VarChar) { Value = user.firstname },
-                new SqlParameter("@Lastname", SqlDbType.VarChar) { Value = user.lastname },
-                new SqlParameter("@Email", SqlDbType.VarChar) { Value = user.email },
-                new SqlParameter("@Password", SqlDbType.VarChar) { Value = user.password },
+                new SqlParameter("@Username", SqlDbType.VarChar) { Value = user.Username },
+                new SqlParameter("@Firstname", SqlDbType.VarChar) { Value = user.Firstname },
+                new SqlParameter("@Lastname", SqlDbType.VarChar) { Value = user.Lastname },
+                new SqlParameter("@Email", SqlDbType.VarChar) { Value = user.Email },
+                new SqlParameter("@Password", SqlDbType.VarChar) { Value = user.Password },
                 new SqlParameter("@CreatedAt", SqlDbType.DateTime) { Value = DateTime.Now }
             };
-            return (int)_dbHelper.ExecuteScalar(insertQuery, insertParameters);
+            return await _dbHelper.ExecuteScalar<int>(insertQuery, insertParameters);
         }
     }
 }

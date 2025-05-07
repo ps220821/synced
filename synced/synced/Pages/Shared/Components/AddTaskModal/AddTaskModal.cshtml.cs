@@ -35,9 +35,8 @@ namespace synced.Pages.Shared.Components.AddTaskModal
             }
             int projectId = task?.Project_id ?? project_id ?? 0;
 
-            OperationResult<List<UserDto>> resultUsers =  await _projectUserService.GetAllUsers(projectId);
-
-            this.userDtoList = resultUsers.Data;
+            OperationResult<List<UserDto>> resultUsers = await _projectUserService.GetAllUsers(projectId);
+            this.userDtoList = resultUsers.Data ?? new List<UserDto>();
 
             newTask.Users = userDtoList;
 

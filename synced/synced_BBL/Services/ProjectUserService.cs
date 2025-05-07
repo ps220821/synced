@@ -1,9 +1,9 @@
 ﻿using Microsoft.Data.SqlClient;
 using synced.Core.Results;
 using synced_BBL.Dtos;
-using synced_BBL.Interfaces;
 using synced_DAL;
-using synced_DAL.Entities;
+using synced_DALL.Entities;
+using synced_DAL.Interfaces;
 using synced_DALL.Interfaces;
 using synced_DALL.Repositories;
 using System;
@@ -11,27 +11,37 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using synced_BBL.Interfaces;
 
 namespace synced_BBL.Services
 {
     public class ProjectUserService : IProjectUserService
     {
         private readonly IUserProjectRepository _userProjectRepository;
+        private readonly IUserRepository _userRepository;
 
-        public ProjectUserService(IProjectRepository projectRepository, IUserProjectRepository userProjectRepository)
+        public ProjectUserService( IUserProjectRepository userProjectRepository, IUserRepository userRepository)
         {
             _userProjectRepository = userProjectRepository;
+            _userRepository = userRepository;
         }
 
-        public async Task<OperationResult<bool>> AddUserToProject(int projectId, int userId)
+        public async Task<OperationResult<bool>> AddUserToProject(int projectId, int userId, string email)
         {
             try
             {
-                Project_users projectUser = new Project_users
+                var user = await _userRepository.CheckEmailExists(email);  // Dit kan je aanpassen afhankelijk van hoe je gebruikers ophaalt
+
+                if (user == null)
                 {
-                    project_id = projectId,
-                    user_id = userId,
-                    roles = Roles.member
+                    return OperationResult<bool>.Failure("User with this email does not exist.");
+                }
+
+                ProjectUsers projectUser = new ProjectUsers
+                {
+                    ProjectId = projectId,
+                    UserId = userId,
+                    Role = Roles.member
                 };
 
                 int rowsAffected = await _userProjectRepository.AddUserToProject(projectUser);
@@ -89,16 +99,16 @@ namespace synced_BBL.Services
         {
             try
             {
-                var users = await _userProjectRepository.GetAllUsers(projectId);
+                List<ProjectUsers> users = await _userProjectRepository.GetProjectUsers(projectId);
 
                 var userDtos = users.Select(user => new UserDto
                 {
-                    Id = user.id,
-                    Firstname = user.firstname,
-                    Lastname = user.lastname,
-                    Email = user.email,
-                    Password = user.password, // Opmerking: wachtwoord retourneren is meestal niet veilig!
-                    Created_at = user.created_at
+                    Id = user.Id,
+                    Firstname = user.User.Firstname,
+                    Lastname = user.User.Lastname,
+                    Email = user.User.Email,
+                    Password = user.User.Password, // Opmerking: wachtwoord retourneren is meestal niet veilig!
+                    Created_at = user.User.CreatedAt
                 }).ToList();
 
                 return OperationResult<List<UserDto>>.Success(userDtos);

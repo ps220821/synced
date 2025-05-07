@@ -3,9 +3,8 @@ using synced.Core.Results;
 using synced_BBL.Dtos;
 using synced_BBL.Interfaces;
 using synced_DAL;
-using synced_DAL.Entities;
-using synced_DALL.Entities;
 using synced_DALL.Interfaces;
+using synced_DALL.Entities;
 using synced_DALL.Repositories;
 using System;
 using System.Collections.Generic;
@@ -36,7 +35,7 @@ namespace synced_BBL.Services
                     return OperationResult<int>.Failure("Comment data cannot be null.");
                 }
 
-                if (string.IsNullOrEmpty(taskCommentDto.comment))
+                if (string.IsNullOrEmpty(taskCommentDto.Comment))
                 {
                     return OperationResult<int>.Failure("Comment cannot be empty.");
                 }
@@ -47,7 +46,7 @@ namespace synced_BBL.Services
                     return OperationResult<int>.Failure("Comment mapping failed.");
                 }
 
-                int newCommentId =  _taskCommentrRepository.CreateAsync(newComment);
+                int newCommentId = await _taskCommentrRepository.CreateAsync(newComment);
 
                 if (newCommentId > 0)
                 {
@@ -74,16 +73,16 @@ namespace synced_BBL.Services
         {
             try
             {
-                var comments =  _taskCommentrRepository.GetAllAsync(taskId);
+                var comments = await  _taskCommentrRepository.GetAllAsync(taskId);
 
                 List<TaskCommentExtendedDto> commentDtos = comments.Select(comment => new TaskCommentExtendedDto
                 {
-                    id = comment.id,
-                    user_id = comment.user_id,
-                    task_id = comment.task_id,
-                    comment = comment.comment,
-                    username = comment.username,
-                    created_at = comment.created_at
+                    Id = comment.Id,
+                    UserId = comment.UserId,
+                    TaskId = comment.TaskId,
+                    Comment = comment.Comment,
+                    Username = comment.User.Username,
+                    CreatedAt = comment.CreatedAt
                 }).ToList();
 
                 return OperationResult<List<TaskCommentExtendedDto>>.Success(commentDtos);

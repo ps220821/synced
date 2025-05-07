@@ -4,14 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace synced_DAL.Entities
+namespace synced_DALL.Entities
 {
     public class TaskComment
     {
-        public int id { get; set; }
-        public int user_id { get; set; }
-        public int task_id { get; set; }
-        public string comment { get; set; }
-        public DateTime created_at { get; set; }
+        public int Id { get; set; }
+        public int UserId { get; set; }
+        public User User { get; set; } 
+        public int TaskId { get; set; }
+        public Task Task { get; set; }
+        public string Comment { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }

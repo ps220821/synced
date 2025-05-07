@@ -1,5 +1,4 @@
-﻿using synced_DAL.Entities;
-using synced_DALL.Entities;
+﻿using synced_DALL.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,8 +9,8 @@ namespace synced_DALL.Interfaces
 {
     public interface ItaskCommentRepository
     {
-        int CreateAsync(TaskComment taskComment);
-        List<TaskCommentExtended> GetAllAsync(int taskId);
-
+        Task<int> CreateAsync(TaskComment taskComment);
+        Task<List<TaskComment>> GetAllAsync(int taskId);
     }
+    
 }

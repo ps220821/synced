@@ -1,4 +1,4 @@
-﻿using synced_DAL.Entities;
+﻿using synced_DALL.Entities;
 using synced_DAL.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -10,14 +10,11 @@ namespace synced_DALL.Interfaces
 {
     public interface IProjectRepository 
     {
-        List<Project> GetAllAsync(int id);
+        Task<List<Project>> GetAllAsync(int id);
 
         Task<Project> GetByIdAsync(int id);
 
-        int CreateAsync(Project entity);
-
-        bool UpdateAsync(Project entity);
-
-        int DeleteAsync(int id);
+        Task<int> CreateAsync(Project project);
+        Task<int> DeleteAsync(int id);
     }
 }

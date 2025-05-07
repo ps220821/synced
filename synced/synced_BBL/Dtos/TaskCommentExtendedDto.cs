@@ -8,6 +8,6 @@ namespace synced_BBL.Dtos
 {
     public class TaskCommentExtendedDto : TaskCommentDto
     {
-        public string username { get; set; } // Change the setter to public
+        public string Username { get; set; } // Change the setter to public
     }
 }

@@ -17,23 +17,22 @@ namespace synced_DAL
             return connection;
         }
 
-        public int ExecuteNonQuery(string query, List<SqlParameter> parameters)
+        public async Task<int> ExecuteNonQuery(string query, List<SqlParameter> parameters)
         {
             try
             {
                 using (SqlConnection connection = GetConnection())
                 {
-                    connection.Open();
+                    await connection.OpenAsync();  // Asynchroon openen van de verbinding
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
                         command.Parameters.AddRange(parameters.ToArray());
-                        return command.ExecuteNonQuery() ;
+                        return await command.ExecuteNonQueryAsync();  // Asynchrone uitvoering van de query
                     }
                 }
             }
             catch (SqlException ex)
             {
-                // Gebruik direct de method om de fout te vertalen
                 throw new DatabaseException(DatabaseHelper.GetErrorMessage(ex), ex);
             }
             catch (Exception ex)
@@ -42,7 +41,7 @@ namespace synced_DAL
             }
         }
 
-        public int ExecuteScalar(string query, List<SqlParameter> parameters)
+        public async Task<T> ExecuteScalar<T>(string query, List<SqlParameter> parameters)
         {
             try
             {
@@ -53,13 +52,12 @@ namespace synced_DAL
                     {
                         command.Parameters.AddRange(parameters.ToArray());
                         object result = command.ExecuteScalar();
-                        return (result != null && result != DBNull.Value) ? Convert.ToInt32(result) : 0;
+                        return (result != null && result != DBNull.Value) ? (T)Convert.ChangeType(result, typeof(T)) : default;
                     }
                 }
             }
             catch (SqlException ex)
             {
-                // Gebruik direct de method om de fout te vertalen
                 throw new DatabaseException(DatabaseHelper.GetErrorMessage(ex), ex);
             }
             catch (Exception ex)
@@ -68,22 +66,22 @@ namespace synced_DAL
             }
         }
 
-        public List<T> ExecuteReader<T>(string query, List<SqlParameter> parameters, Func<SqlDataReader, T> map)
+        public async Task<List<T>> ExecuteReader<T>(string query, List<SqlParameter> parameters, Func<SqlDataReader, T> map)
         {
             try
             {
                 using (SqlConnection connection = GetConnection())
                 {
-                    connection.Open();
+                    await connection.OpenAsync();
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
                         command.Parameters.AddRange(parameters.ToArray());
-                        using (SqlDataReader reader = command.ExecuteReader())
+                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
                         {
                             List<T> results = new List<T>();
-                            while (reader.Read())
+                            while (await reader.ReadAsync())
                             {
-                                results.Add(map(reader)); // Use the provided mapping function
+                                results.Add(map(reader)); // Gebruik de mappingfunctie die je hebt doorgegeven
                             }
                             return results;
                         }

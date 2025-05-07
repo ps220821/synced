@@ -1,10 +1,11 @@
-﻿using System;
+﻿using synced_DALL.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace synced_DAL.Entities
+namespace synced_DALL.Entities
 {
     public class Project
     {
@@ -14,7 +15,6 @@ namespace synced_DAL.Entities
         public DateOnly Start_Date { get; set; }
         public DateOnly End_Date { get;  set; }
         public int Owner { get; set; }
-
-        public User user { get; set; }
+        public User User { get; set; }
     }
 }
