@@ -32,7 +32,7 @@ namespace synced_BBL.Services
                 }
 
                 // Maak association via rich‐factory
-                var projectUser = ProjectUsers.Create(
+                ProjectUsers projectUser = ProjectUsers.Create(
                     projectId,
                     userId,
                     Roles.member

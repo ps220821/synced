@@ -152,7 +152,7 @@ namespace synced_DALL.Entities
             User? AssginedUser,
             Project? project)
         {
-            var t = new Task(
+            Task t = new Task(
                 id,
                 title,
                 description,
