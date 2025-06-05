@@ -114,7 +114,7 @@
             int ownerUserId,
             User ownerUser)
         {
-            var p = new Project(
+            Project p = new Project(
                 id,
                 name,
                 description,
@@ -125,6 +125,7 @@
             typeof(Project)
                 .GetProperty(nameof(Project.User))
                 .SetValue(p, ownerUser);
+
             return p;
         }
 

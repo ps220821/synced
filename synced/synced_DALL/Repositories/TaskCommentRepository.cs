@@ -84,7 +84,7 @@ namespace synced_DALL.Repositories
 
                 return await _dbHelper.ExecuteReader(query, parameters, reader =>
                 {
-                    var ownerUser = User.Rehydrate(
+                    User ownerUser = User.Rehydrate(
                         reader.GetInt32(reader.GetOrdinal("OwnerUserId")),
                         reader.GetString(reader.GetOrdinal("OwnerUsername")),
                         reader.GetString(reader.GetOrdinal("OwnerFirstname")),
@@ -94,7 +94,7 @@ namespace synced_DALL.Repositories
                         reader.GetDateTime(reader.GetOrdinal("OwnerCreatedAt"))
                     );
 
-                    var task = Entities.Task.Rehydrate(
+                    Entities.Task task = Entities.Task.Rehydrate(
                         reader.GetInt32(reader.GetOrdinal("TId")),
                         reader.GetString(reader.GetOrdinal("Title")),
                         reader.GetString(reader.GetOrdinal("Description")),

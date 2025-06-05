@@ -40,7 +40,7 @@ namespace synced_BBL.Services
                     UserId = t.UserId
                 }).ToList();
 
-                var taskGroup = GetTasksGroupedByStatus(taskDtos);
+                TaskGroupDto taskGroup = GetTasksGroupedByStatus(taskDtos);
                 return OperationResult<TaskGroupDto>.Success(taskGroup);
             }
             catch (DatabaseException ex)
@@ -70,7 +70,7 @@ namespace synced_BBL.Services
                 if (taskDto == null)
                     return OperationResult<bool>.Failure("Task cannot be null.");
 
-                var newTask = Task.Create(
+                Task newTask = Task.Create(
                     taskDto.Title,
                     taskDto.Description,
                     taskDto.Status,
@@ -106,7 +106,7 @@ namespace synced_BBL.Services
                 if (taskDto == null)
                     return OperationResult<bool>.Failure("Task cannot be null.");
 
-                var updatedTask = Task.FromExisting(
+                Task updatedTask = Task.FromExisting(
                     taskDto.Id,
                     taskDto.Title,
                     taskDto.Description,

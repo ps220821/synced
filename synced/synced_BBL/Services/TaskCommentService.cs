@@ -30,7 +30,7 @@ namespace synced_BBL.Services
                 if (string.IsNullOrWhiteSpace(taskCommentDto.Comment))
                     return OperationResult<int>.Failure("Comment cannot be empty.");
 
-                var newComment = Task.Create(
+                Task newComment = Task.Create(
                     taskCommentDto.UserId,
                     taskCommentDto.TaskId,
                     taskCommentDto.Comment,

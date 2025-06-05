@@ -79,7 +79,7 @@ namespace synced_BBL.Services
                     return OperationResult<int>.Failure("Email already exists.");
                 }
 
-                var newUser = User.Create(
+                User newUser = User.Create(
                     userDto.Username,
                     userDto.Firstname,
                     userDto.Lastname,

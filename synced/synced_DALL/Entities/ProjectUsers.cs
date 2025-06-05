@@ -91,7 +91,7 @@ namespace synced_DALL.Entities
             Project project,
             User user)
         {
-            var pu = new ProjectUsers(
+            ProjectUsers pu = new ProjectUsers(
                 id,
                 projectId,
                 userId,

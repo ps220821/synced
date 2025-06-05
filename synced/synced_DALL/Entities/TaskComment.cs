@@ -110,7 +110,7 @@ namespace synced_DALL.Entities
             User ownerUser,
             Task task)
         {
-            var tc = new TaskComment(
+            TaskComment tc = new TaskComment(
                 id,
                 userId,
                 taskId,

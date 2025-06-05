@@ -96,7 +96,7 @@ namespace synced_DALL.Entities
            string password,
            DateTime createdAt)
         {
-            var u = new User
+            User u = new User
             {
                 _email = email,
                 _password = password,
