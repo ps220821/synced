@@ -11,9 +11,6 @@ namespace synced_DALL.Interfaces
     public interface IProjectRepository 
     {
         Task<List<Project>> GetAllAsync(int id);
-
-        Task<Project> GetByIdAsync(int id);
-
         Task<int> CreateAsync(Project project);
         Task<int> DeleteAsync(int id);
     }

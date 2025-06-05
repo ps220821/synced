@@ -111,23 +111,21 @@ namespace synced_tests
             int taskId = 1;
             var taskComments = new List<TaskComment>
             {
-                new TaskCommentExtended
+                new TaskComment
                 {
                     Id = 1,
                     UserId = 1,
                     TaskId = taskId,
                     Comment = "First comment",
                     CreatedAt = DateTime.Now,
-                    Username = "User1"
                 },
-                new TaskCommentExtended
+                new TaskComment
                 {
                     Id = 2,
                     UserId = 2,
                     TaskId = taskId,
                     Comment = "Second comment",
                     CreatedAt = DateTime.Now,
-                    Username = "User2"
                 }
             };
 

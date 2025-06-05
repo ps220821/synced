@@ -51,11 +51,11 @@
                     </div>
                     <div class="mb-4">
                         <label class="form-label">Assigned To</label>
-                        <select class="form-control" id="taskAssignedTo_@Model.Task.Id" asp-for="Task.User_id">
+                        <select class="form-control" id="taskAssignedTo_@Model.Task.Id" asp-for="Task.UserId">
                             <option value="">Select a user</option>
                             @foreach (var user in Model.Task.Users)
                             {
-                                <option value="@user.Id" selected="@(Model.Task.User_id == user.Id ? "selected" : null)">@user.Firstname</option>
+                                <option value="@user.Id" selected="@(Model.Task.UserId == user.Id ? "selected" : null)">@user.Firstname</option>
                             }
                         </select>
                     </div>

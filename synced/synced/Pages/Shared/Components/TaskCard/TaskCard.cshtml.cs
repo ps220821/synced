@@ -18,7 +18,7 @@ namespace synced.Pages.Shared.Components.TaskCard
                 Status = (Status)task.Status,
                 Priority = (Priorities) task.Priority,
                 Deadline = task.Deadline,
-                User_id = task.UserId,
+                UserId = task.UserId,
                 Project_id = task.ProjectId,
             };
 

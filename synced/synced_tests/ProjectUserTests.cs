@@ -1,13 +1,8 @@
 ﻿using Moq;
 using synced_BBL.Services;
-using synced_DAL.Entities;
 using synced_DAL.Interfaces;
+using synced_DALL.Entities;
 using synced_DALL.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 using Task = System.Threading.Tasks.Task;
 
@@ -35,12 +30,12 @@ namespace synced_tests
             string email = "user@example.com";  // Geldig emailadres
             var user = new User
             {
-                id = userId,
-                username = "user",
-                firstname = "First",
-                lastname = "User",
-                email = email,
-                created_at = DateTime.Now
+                Id = userId,
+                Username = "user",
+                Firstname = "First",
+                Lastname = "User",
+                Email = email,
+                CreatedAt = DateTime.Now
             };
 
             // Simuleer dat de gebruiker met het gegeven emailadres bestaat
@@ -66,12 +61,12 @@ namespace synced_tests
             string email = "user@example.com";  // Geldig emailadres
             var user = new User
             {
-                id = userId,
-                username = "user",
-                firstname = "First",
-                lastname = "User",
-                email = email,
-                created_at = DateTime.Now
+                Id = userId,
+                Username = "user",
+                Firstname = "First",
+                Lastname = "User",
+                Email = email,
+                CreatedAt = DateTime.Now
             };
 
             _userRepoMock.Setup(repo => repo.CheckEmailExists(email)).ReturnsAsync(0);
@@ -137,31 +132,50 @@ namespace synced_tests
         {
             // Arrange
             int projectId = 1;
-            var users = new List<User>
+            var projectUsers = new List<ProjectUsers>
+    {
+        new ProjectUsers
+        {
+            Id = 1,
+            ProjectId = projectId,
+            Project = new Project { Id = projectId, Name = "Project 1" }, // Stel een project in (optioneel)
+            UserId = 1,
+            User = new User
             {
-                new User
+                Id = 1,
+                Username = "user1",
+                Firstname = "First",
+                Lastname = "User",
+                Email = "user1@example.com",
+                Password = "password123",
+                CreatedAt = DateTime.Now
+            },
+            Role = Roles.member
+        },
+        new ProjectUsers
+            {
+                Id = 2,
+                ProjectId = projectId,
+                Project = new Project { Id = projectId, Name = "Project 1" }, // Stel een project in (optioneel)
+                UserId = 2,
+                User = new User
                 {
-                    id = 1,
-                    username = "user1",
-                    firstname = "First",
-                    lastname = "User",
-                    email = "user1@example.com",
-                    password = "password123",
-                    created_at = DateTime.Now
+                    Id = 2,
+                    Username = "user2",
+                    Firstname = "Second",
+                    Lastname = "User",
+                    Email = "user2@example.com",
+                    Password = "password123",
+                    CreatedAt = DateTime.Now
                 },
-                new User
-                {
-                    id = 2,
-                    username = "user2",
-                    firstname = "Second",
-                    lastname = "User",
-                    email = "user2@example.com",
-                    password = "password123",
-                    created_at = DateTime.Now
+                Role = Roles.admin
                 }
             };
 
-            _userProjectRepoMock.Setup(repo => repo.GetAllUsers(projectId)).ReturnsAsync(users);
+            // Stel de mock in om de lijst van ProjectUsers terug te geven
+            _userProjectRepoMock
+                .Setup(repo => repo.GetProjectUsers(projectId))
+                .ReturnsAsync(projectUsers);
 
             // Act
             var result = await _projectUserService.GetAllUsers(projectId);
@@ -178,9 +192,9 @@ namespace synced_tests
         {
             // Arrange
             int projectId = 1;
-            var users = new List<User>();  
+            var users = new List<ProjectUsers>();  
 
-            _userProjectRepoMock.Setup(repo => repo.GetAllUsers(projectId)).ReturnsAsync(users);
+            _userProjectRepoMock.Setup(repo => repo.GetProjectUsers(projectId)).ReturnsAsync(users);
 
             // Act
             var result = await _projectUserService.GetAllUsers(projectId);
@@ -196,7 +210,7 @@ namespace synced_tests
             // Arrange
             int projectId = 1;
 
-            _userProjectRepoMock.Setup(repo => repo.GetAllUsers(projectId)).ThrowsAsync(new Exception("Unexpected error"));
+            _userProjectRepoMock.Setup(repo => repo.GetProjectUsers(projectId)).ThrowsAsync(new Exception("Unexpected error"));
 
             // Act
             var result = await _projectUserService.GetAllUsers(projectId);

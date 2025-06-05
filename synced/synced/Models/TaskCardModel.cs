@@ -16,7 +16,7 @@ namespace synced.Models
 
         public DateTime Deadline { get; set; }
 
-        public int? User_id { get; set; }
+        public int? UserId { get; set; }
 
         public int Project_id { get; set; }
     }

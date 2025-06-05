@@ -23,46 +23,98 @@ namespace synced_DAL.Repositories
             this._dbHelper = dbhelper;
         }
 
-        public async Task<int> Login(string email, string password)
+        public async Task<User> GetByMail(string email)
         {
-            
-                string query = "SELECT id FROM users WHERE email = @Email AND password = @Password";
-                var parameters = new List<SqlParameter>
-                {
-                    new SqlParameter("@Email", SqlDbType.VarChar) { Value = email },
-                    new SqlParameter("@Password", SqlDbType.VarChar) { Value = password }
-                };
+            try
+            {
+                string query = @"
+            SELECT id, username, firstname, lastname, email, password, created_at
+            FROM users
+            WHERE email = @Email;";
 
-                return await _dbHelper.ExecuteScalar<int>(query, parameters);
+                var parameters = new List<SqlParameter>
+        {
+            new SqlParameter("@Email", SqlDbType.VarChar) { Value = email }
+        };
+
+                var users = await _dbHelper.ExecuteReader(query, parameters, reader =>
+                {
+                    int id = reader.GetInt32(reader.GetOrdinal("id"));
+                    string username = reader.IsDBNull(reader.GetOrdinal("username"))
+                                       ? null
+                                       : reader.GetString(reader.GetOrdinal("username"));
+                    string firstname = reader.IsDBNull(reader.GetOrdinal("firstname"))
+                                       ? null
+                                       : reader.GetString(reader.GetOrdinal("firstname"));
+                    string lastname = reader.IsDBNull(reader.GetOrdinal("lastname"))
+                                       ? null
+                                       : reader.GetString(reader.GetOrdinal("lastname"));
+                    string mail = reader.GetString(reader.GetOrdinal("email"));
+                    string password = reader.GetString(reader.GetOrdinal("password"));
+                    DateTime created = reader.GetDateTime(reader.GetOrdinal("created_at"));
+
+                    return new User(
+                        id,
+                        username,
+                        firstname,
+                        lastname,
+                        mail,
+                        password,
+                        created
+                    );
+                });
+
+                return (users.Count > 0) ? users[0] : null;
+            }
+            catch (SqlException ex)
+            {
+                throw new DatabaseException("Error retrieving user by email.", ex);
+            }
         }
 
         public async Task<int> CheckEmailExists(string email)
         {
-            string query = "SELECT id FROM users WHERE email = @Email;";
-
-            var parameters = new List<SqlParameter>
+            try
             {
-                new SqlParameter("@Email", SqlDbType.VarChar) { Value = email },
-            };
+                string query = "SELECT id FROM users WHERE email = @Email;";
+                var parameters = new List<SqlParameter>
+                {
+                    new SqlParameter("@Email", SqlDbType.VarChar) { Value = email },
+                };
 
-
-            return await _dbHelper.ExecuteScalar<int>(query, parameters);
+                return await _dbHelper.ExecuteScalar<int>(query, parameters);
+            }
+            catch (SqlException ex)
+            {
+                throw new DatabaseException("Error checking email existence.", ex);
+            }
         }
 
         public async Task<int> Register(User user)
         {
-            string insertQuery = "INSERT INTO users (username, firstname, lastname, email, password, created_at) " +
-                                 "VALUES (@Username, @Firstname, @Lastname, @Email, @Password, @CreatedAt)";
-            var insertParameters = new List<SqlParameter>
+            try
             {
-                new SqlParameter("@Username", SqlDbType.VarChar) { Value = user.Username },
-                new SqlParameter("@Firstname", SqlDbType.VarChar) { Value = user.Firstname },
-                new SqlParameter("@Lastname", SqlDbType.VarChar) { Value = user.Lastname },
-                new SqlParameter("@Email", SqlDbType.VarChar) { Value = user.Email },
-                new SqlParameter("@Password", SqlDbType.VarChar) { Value = user.Password },
-                new SqlParameter("@CreatedAt", SqlDbType.DateTime) { Value = DateTime.Now }
-            };
-            return await _dbHelper.ExecuteScalar<int>(insertQuery, insertParameters);
+                string insertQuery = @"
+                    INSERT INTO users (username, firstname, lastname, email, password, created_at)
+                    VALUES (@Username, @Firstname, @Lastname, @Email, @Password, @CreatedAt);
+                    SELECT SCOPE_IDENTITY();";
+
+                var parameters = new List<SqlParameter>
+                {
+                    new SqlParameter("@Username", SqlDbType.VarChar) { Value = user.Username ?? (object)DBNull.Value },
+                    new SqlParameter("@Firstname", SqlDbType.VarChar) { Value = user.Firstname ?? (object)DBNull.Value },
+                    new SqlParameter("@Lastname", SqlDbType.VarChar) { Value = user.Lastname ?? (object)DBNull.Value },
+                    new SqlParameter("@Email", SqlDbType.VarChar) { Value = user.Email },
+                    new SqlParameter("@Password", SqlDbType.VarChar) { Value = user.Password },
+                    new SqlParameter("@CreatedAt", SqlDbType.DateTime) { Value = user.CreatedAt }
+                };
+
+                return await _dbHelper.ExecuteScalar<int>(insertQuery, parameters);
+            }
+            catch (SqlException ex)
+            {
+                throw new DatabaseException("Error registering user.", ex);
+            }
         }
     }
 }
