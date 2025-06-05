@@ -11,7 +11,7 @@ namespace synced_DAL.Interfaces
 {
     public interface IUserRepository
     {
-        Task<int> Login(string email, string password);
+        Task<User> GetByMail(string email);
         Task<int> Register(User user);
         Task<int> CheckEmailExists(string email);
     }

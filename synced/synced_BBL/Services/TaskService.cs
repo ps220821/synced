@@ -1,17 +1,15 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using synced.Core.Results;
 using synced_BBL.Dtos;
 using synced_BBL.Interfaces;
 using synced_DAL;
+using synced_DAL.Interfaces;
 using synced_DALL.Entities;
 using synced_DALL.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using velocitaApi.Mappers;
 using Task = synced_DALL.Entities.Task;
-
 
 namespace synced_BBL.Services
 {
@@ -19,39 +17,35 @@ namespace synced_BBL.Services
     {
         private readonly ITaskRepository _taskRepository;
 
-        public TaskService (ITaskRepository taskRepository)
+        public TaskService(ITaskRepository taskRepository)
         {
             _taskRepository = taskRepository;
         }
+
         public async Task<OperationResult<TaskGroupDto>> GetAllTasks(int projectId)
         {
             try
             {
                 List<Task> tasks = await _taskRepository.GetAllAsync(projectId);
 
-                List<TaskDto> taskDtos = tasks.Select(task => new TaskDto
+                var taskDtos = tasks.Select(t => new TaskDto
                 {
-                    Id = task.Id,
-                    Title = task.Title,
-                    Description = task.Description,
-                    Status = task.Status,
-                    Priority = task.Priority,
-                    Deadline = task.Deadline,
-                    ProjectId = task.ProjectId,
-                    UserId = task.UserId
+                    Id = t.Id,
+                    Title = t.Title,
+                    Description = t.Description,
+                    Status = t.Status,
+                    Priority = t.Priority,
+                    Deadline = t.Deadline,
+                    ProjectId = t.ProjectId,
+                    UserId = t.UserId
                 }).ToList();
 
-                TaskGroupDto taskGroup = GetTasksGroupedByStatus(taskDtos);
-
+                var taskGroup = GetTasksGroupedByStatus(taskDtos);
                 return OperationResult<TaskGroupDto>.Success(taskGroup);
             }
             catch (DatabaseException ex)
             {
                 return OperationResult<TaskGroupDto>.Failure(ex.Message);
-            }
-            catch (SqlException ex)
-            {
-                return OperationResult<TaskGroupDto>.Failure(DatabaseHelper.GetErrorMessage(ex));
             }
             catch (Exception)
             {
@@ -61,43 +55,43 @@ namespace synced_BBL.Services
 
         public TaskGroupDto GetTasksGroupedByStatus(List<TaskDto> tasks)
         {
-            TaskGroupDto taskGroupDto = new TaskGroupDto();
-
-            if (tasks.Count > 0)
+            return new TaskGroupDto
             {
-                taskGroupDto.TodoTasks = tasks.Where(tasks => tasks.Status == Status.todo).ToList();
-                taskGroupDto.InProgressTasks = tasks.Where(tasks => tasks.Status == Status.inprogress).ToList();
-                taskGroupDto.DoneTasks = tasks.Where(tasks => tasks.Status == Status.done).ToList();
-            }
-
-            return taskGroupDto;
+                TodoTasks = tasks.Where(t => t.Status == Status.todo).ToList(),
+                InProgressTasks = tasks.Where(t => t.Status == Status.inprogress).ToList(),
+                DoneTasks = tasks.Where(t => t.Status == Status.done).ToList()
+            };
         }
 
-        public async Task<OperationResult<bool>> CreateTask(TaskDto task)
+        public async Task<OperationResult<bool>> CreateTask(TaskDto taskDto)
         {
             try
             {
-                if (task == null) return OperationResult<bool>.Failure("Task cannot be null.");
+                if (taskDto == null)
+                    return OperationResult<bool>.Failure("Task cannot be null.");
 
-                Task newTask = Mapper.MapCreate<Task>(task);
+                var newTask = Task.Create(
+                    taskDto.Title,
+                    taskDto.Description,
+                    taskDto.Status,
+                    taskDto.Priority,
+                    taskDto.Deadline,
+                    taskDto.UserId,
+                    taskDto.ProjectId
+                );
+
                 int newTaskId = await _taskRepository.CreateAsync(newTask);
-
-                if (newTaskId > 0)
-                {
-                    return OperationResult<bool>.Success(true); // Successfully created
-                }
-                else
-                {
-                    return OperationResult<bool>.Failure("Task could not be created.");
-                }
+                return (newTaskId > 0)
+                    ? OperationResult<bool>.Success(true)
+                    : OperationResult<bool>.Failure("Task could not be created.");
+            }
+            catch (ArgumentException ex)
+            {
+                return OperationResult<bool>.Failure(ex.Message);
             }
             catch (DatabaseException ex)
             {
                 return OperationResult<bool>.Failure(ex.Message);
-            }
-            catch (SqlException ex)
-            {
-                return OperationResult<bool>.Failure(DatabaseHelper.GetErrorMessage(ex));
             }
             catch (Exception)
             {
@@ -105,45 +99,47 @@ namespace synced_BBL.Services
             }
         }
 
-        public Task<OperationResult<bool>> DeleteTask(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<OperationResult<bool>> UpdateTask(TaskDto task)
+        public async Task<OperationResult<bool>> UpdateTask(TaskDto taskDto)
         {
             try
             {
-                if (task == null) return OperationResult<bool>.Failure("Task cannot be null.");
+                if (taskDto == null)
+                    return OperationResult<bool>.Failure("Task cannot be null.");
 
-                Task updatedTask = Mapper.MapCreate<Task>(task);
-                updatedTask.Status = task.Status;
-                updatedTask.Priority = task.Priority;
+                var updatedTask = Task.FromExisting(
+                    taskDto.Id,
+                    taskDto.Title,
+                    taskDto.Description,
+                    taskDto.Status,
+                    taskDto.Priority,
+                    taskDto.Deadline,
+                    taskDto.UserId,
+                    taskDto.ProjectId
+                );
 
                 int rowsAffected = await _taskRepository.UpdateAsync(updatedTask);
 
-                if (rowsAffected > 0)
-                {
-                    return OperationResult<bool>.Success(true); // Successfully updated
-                }
-                else
-                {
-                    return OperationResult<bool>.Failure("Task could not be updated or does not exist.");
-                }
+                return (rowsAffected > 0)
+                    ? OperationResult<bool>.Success(true)
+                    : OperationResult<bool>.Failure("Task could not be updated or does not exist.");
+            }
+            catch (ArgumentException ex)
+            {
+                return OperationResult<bool>.Failure(ex.Message);
             }
             catch (DatabaseException ex)
             {
                 return OperationResult<bool>.Failure(ex.Message);
             }
-            catch (SqlException ex)
-            {
-                return OperationResult<bool>.Failure(DatabaseHelper.GetErrorMessage(ex));
-            }
             catch (Exception)
             {
                 return OperationResult<bool>.Failure("An unexpected error occurred while updating the task.");
             }
+        }
 
+        public Task<OperationResult<bool>> DeleteTask(int id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

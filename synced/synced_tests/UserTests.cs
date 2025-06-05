@@ -4,7 +4,6 @@ using Xunit;
 using synced_BBL.Services;
 using synced_DAL.Interfaces;
 using synced_BBL.Dtos;
-using synced_DAL.Entities;
 using synced.Core.Results;
 using System;
 using Task = System.Threading.Tasks.Task;

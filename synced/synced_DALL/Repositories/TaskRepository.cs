@@ -2,9 +2,11 @@
 using synced_DAL;
 using synced_DALL.Entities;
 using synced_DALL.Interfaces;
+using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
 using Task = synced_DALL.Entities.Task;
-
 
 namespace synced_DALL.Repositories
 {
@@ -14,30 +16,36 @@ namespace synced_DALL.Repositories
 
         public TaskRepository(DatabaseHelper dbhelper)
         {
-            _dbHelper = dbhelper; // Initialize the DatabaseHelper instance
+            _dbHelper = dbhelper;
         }
 
         public async Task<int> CreateAsync(Task task)
         {
-            string query = @"
-                INSERT INTO tasks (title, description, status, priority, deadline, user_id, project_id) 
-                VALUES (@Title, @Description, @Status, @Priority, @Deadline, @User_Id, @Project_Id);
-                SELECT SCOPE_IDENTITY();";
-
-            var parameters = new List<SqlParameter>
+            try
             {
-                new SqlParameter("@Title", SqlDbType.NVarChar) { Value = task.Title },
-                new SqlParameter("@Description", SqlDbType.NVarChar) { Value = task.Description },
-                new SqlParameter("@Status", SqlDbType.Int) { Value = task.Status },
-                new SqlParameter("@Priority", SqlDbType.Int) { Value = task.Priority },
-                new SqlParameter("@Deadline", SqlDbType.DateTime) { Value = task.Deadline },
-                new SqlParameter("@User_Id", SqlDbType.Int) { Value = (object?)task.UserId ?? DBNull.Value },
-                new SqlParameter("@Project_Id", SqlDbType.Int) { Value = task.ProjectId }
-            };
+                string query = @"
+                    INSERT INTO tasks (title, description, status, priority, deadline, user_id, project_id) 
+                    VALUES (@Title, @Description, @Status, @Priority, @Deadline, @User_Id, @Project_Id);
+                    SELECT SCOPE_IDENTITY();";
 
-            return await _dbHelper.ExecuteScalar<int>(query, parameters);
+                var parameters = new List<SqlParameter>
+                {
+                    new SqlParameter("@Title", SqlDbType.NVarChar) { Value = task.Title },
+                    new SqlParameter("@Description", SqlDbType.NVarChar) { Value = task.Description },
+                    new SqlParameter("@Status", SqlDbType.Int) { Value = task.Status },
+                    new SqlParameter("@Priority", SqlDbType.Int) { Value = task.Priority },
+                    new SqlParameter("@Deadline", SqlDbType.DateTime) { Value = task.Deadline },
+                    new SqlParameter("@User_Id", SqlDbType.Int) { Value = (object?)task.UserId ?? DBNull.Value },
+                    new SqlParameter("@Project_Id", SqlDbType.Int) { Value = task.ProjectId }
+                };
+
+                return await _dbHelper.ExecuteScalar<int>(query, parameters);
+            }
+            catch (SqlException ex)
+            {
+                throw new DatabaseException("Error creating a task.", ex);
+            }
         }
-
 
         public bool DeleteAsync(int id)
         {
@@ -46,112 +54,132 @@ namespace synced_DALL.Repositories
 
         public async Task<List<Task>> GetAllAsync(int projectId)
         {
-            string query = @"
-        SELECT 
-            t.id AS TaskId, 
-            t.title AS Title, 
-            t.description AS Description, 
-            t.status AS Status, 
-            t.priority AS Priority, 
-            t.deadline AS Deadline, 
-            t.user_id AS UserId, 
-            t.project_id AS ProjectId,
-            u.id AS UserId, 
-            u.username AS Username, 
-            u.firstname AS Firstname, 
-            u.lastname AS Lastname, 
-            u.email AS Email, 
-            u.password AS Password, 
-            u.created_at AS CreatedAt,
-            p.id AS ProjectId, 
-            p.name AS ProjectName, 
-            p.description AS ProjectDescription, 
-            p.start_date AS ProjectStartDate, 
-            p.end_date AS ProjectEndDate, 
-            p.owner AS ProjectOwner
-        FROM tasks t
-        LEFT JOIN users u ON t.user_id = u.id
-        LEFT JOIN projects p ON t.project_id = p.id
-        WHERE t.project_id = @ProjectId;";
-
-            var parameters = new List<SqlParameter>
-    {
-        new SqlParameter("@ProjectId", SqlDbType.Int) { Value = projectId }
-    };
-
-            return await _dbHelper.ExecuteReader(query, parameters, reader =>
+            try
             {
-                var task = new Task
+                string query = @"
+                                   SELECT
+                  t.id            AS TaskId,
+                  t.title         AS TaskTitle,
+                  t.description   AS TaskDescription,
+                  t.status        AS TaskStatus,
+                  t.priority      AS TaskPriority,
+                  t.deadline      AS TaskDeadline,
+                  t.user_id       AS TaskUserId,
+                  t.project_id    AS TaskProjectId,
+
+                  u.id            AS OwnerUserId,
+                  u.username      AS OwnerUsername,
+                  u.firstname     AS OwnerFirstname,
+                  u.lastname      AS OwnerLastname,
+                  u.email         AS OwnerEmail,
+                  u.password      AS OwnerPassword,
+                  u.created_at    AS OwnerCreatedAt,
+
+                  p.id            AS ProjectId,
+                  p.name          AS ProjectName,
+                  p.description   AS ProjectDescription,
+                  p.start_date    AS ProjectStartDate,
+                  p.end_date      AS ProjectEndDate,
+                  p.owner         AS ProjectOwnerId
+                FROM tasks t
+                LEFT JOIN users u ON t.user_id = u.id
+                LEFT JOIN projects p ON t.project_id = p.id
+                WHERE t.project_id = @ProjectId;";
+
+                var parameters = new List<SqlParameter>
                 {
-                    Id = reader.GetInt32(reader.GetOrdinal("TaskId")),
-                    Title = reader.GetString(reader.GetOrdinal("Title")),
-                    Description = reader.GetString(reader.GetOrdinal("Description")),
-                    Status = Enum.TryParse(reader.GetString(reader.GetOrdinal("Status")), true, out Status status) ? status : Status.todo,
-                    Priority = Enum.TryParse(reader.GetString(reader.GetOrdinal("Priority")), true, out Priorities priority) ? priority : Priorities.medium,
-                    Deadline = reader.GetDateTime(reader.GetOrdinal("Deadline")),
-                    UserId = reader.IsDBNull(reader.GetOrdinal("UserId")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("UserId")),
-                    ProjectId = reader.GetInt32(reader.GetOrdinal("ProjectId"))
+                    new SqlParameter("@ProjectId", SqlDbType.Int) { Value = projectId }
                 };
 
-                // Koppel de User object
-                if (!reader.IsDBNull(reader.GetOrdinal("UserId")))
+                return await _dbHelper.ExecuteReader(query, parameters, reader =>
                 {
-                    task.User = new User
+                
+                
+                    int? userId = reader.IsDBNull(reader.GetOrdinal("TaskUserId"))
+                                         ? (int?)null
+                                         : reader.GetInt32(reader.GetOrdinal("TaskUserId"));
+                    int projectIdFromTask = reader.GetInt32(reader.GetOrdinal("TaskProjectId"));
+
+                    User ownerUser = null;
+                    if (userId.HasValue)
                     {
-                        Id = reader.GetInt32(reader.GetOrdinal("UserId")),
-                        Username = reader.GetString(reader.GetOrdinal("Username")),
-                        Firstname = reader.IsDBNull(reader.GetOrdinal("Firstname")) ? null : reader.GetString(reader.GetOrdinal("Firstname")),
-                        Lastname = reader.IsDBNull(reader.GetOrdinal("Lastname")) ? null : reader.GetString(reader.GetOrdinal("Lastname")),
-                        Email = reader.GetString(reader.GetOrdinal("Email")),
-                        Password = reader.GetString(reader.GetOrdinal("Password")),
-                        CreatedAt = reader.GetDateTime(reader.GetOrdinal("CreatedAt"))
-                    };
-                }
+                        ownerUser = User.Rehydrate(
+                            reader.GetInt32(reader.GetOrdinal("OwnerUserId")),
+                            reader.GetString(reader.GetOrdinal("OwnerUsername")),
+                            reader.GetString(reader.GetOrdinal("OwnerFirstname")),
+                            reader.GetString(reader.GetOrdinal("OwnerLastname")),
+                            reader.GetString(reader.GetOrdinal("OwnerEmail")),
+                            reader.GetString(reader.GetOrdinal("OwnerPassword")),
+                            reader.GetDateTime(reader.GetOrdinal("OwnerCreatedAt"))
+                        );
+                    }
 
-                // Koppel de Project object
-                task.Project = new Project
-                {
-                    Id = reader.GetInt32(reader.GetOrdinal("ProjectId")),
-                    Name = reader.GetString(reader.GetOrdinal("ProjectName")),
-                    Description = reader.GetString(reader.GetOrdinal("ProjectDescription")),
-                    Start_Date = DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("ProjectStartDate"))),
-                    End_Date = reader.IsDBNull(reader.GetOrdinal("ProjectEndDate"))
-                                ? default
-                                : DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("ProjectEndDate"))),
-                    Owner = reader.GetInt32(reader.GetOrdinal("ProjectOwner"))
-                };
+                    Project project = Project.Rehydrate(
+                        reader.GetInt32(reader.GetOrdinal("ProjectId")),
+                        reader.GetString(reader.GetOrdinal("ProjectName")),
+                        reader.GetString(reader.GetOrdinal("ProjectDescription")),
+                        DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("ProjectStartDate"))),
+                        reader.IsDBNull(reader.GetOrdinal("ProjectEndDate"))
+                            ? DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("ProjectStartDate")))
+                            : DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("ProjectEndDate"))),
+                        reader.GetInt32(reader.GetOrdinal("ProjectOwnerId")),
+                        ownerUser
+                    );
 
-                return task;
-            });
+                    // ─────────── Stap 4: Task rehydraten ───────────
+                    return Task.Rehydrate(
+                        reader.GetInt32(reader.GetOrdinal("TaskId")),
+                        reader.GetString(reader.GetOrdinal("TaskTitle")),
+                        reader.GetString(reader.GetOrdinal("TaskDescription")),
+                        Enum.TryParse( reader.GetString(reader.GetOrdinal("TaskStatus")), true, out Status sVal ) ? sVal : Status.todo,
+                        Enum.TryParse( reader.GetString(reader.GetOrdinal("TaskPriority")), true, out Priorities pVal ) ? pVal : Priorities.medium,
+                        reader.GetDateTime(reader.GetOrdinal("TaskDeadline")),
+                        reader.IsDBNull(reader.GetOrdinal("TaskUserId")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("TaskUserId")),
+                        reader.GetInt32(reader.GetOrdinal("TaskProjectId")),
+                        ownerUser,
+                        project
+                    );
+                });
+            }
+            catch (SqlException ex)
+            {
+                throw new DatabaseException("Error retrieving tasks for this project.", ex);
+            }
         }
-
 
         public async Task<int> UpdateAsync(Task task)
         {
-            string query = @"
-            UPDATE tasks SET 
-            title = @Title,
-            description = @Description,
-            status = @Status,
-            priority = @Priority,
-            deadline = @Deadline,
-            user_id = @User_Id,
-            project_id = @Project_Id
-            WHERE id = @Task_Id;";
-
-            var parameters = new List<SqlParameter>
+            try
             {
-                new SqlParameter("@Title", SqlDbType.NVarChar) { Value = task.Title },
-                new SqlParameter("@Description", SqlDbType.NVarChar) { Value = task.Description },
-                new SqlParameter("@Status", SqlDbType.Int) { Value = task.Status },
-                new SqlParameter("@Priority", SqlDbType.Int) { Value = task.Priority },
-                new SqlParameter("@Deadline", SqlDbType.DateTime) { Value = task.Deadline },
-                new SqlParameter("@User_Id", SqlDbType.Int) { Value = (object?)task.UserId ?? DBNull.Value },
-                new SqlParameter("@Project_Id", SqlDbType.Int) { Value = task.ProjectId },
-                new SqlParameter("@Task_Id", SqlDbType.Int) { Value = task.Id }
-            };
+                string query = @"
+                    UPDATE tasks SET 
+                        title = @Title,
+                        description = @Description,
+                        status = @Status,
+                        priority = @Priority,
+                        deadline = @Deadline,
+                        user_id = @User_Id,
+                        project_id = @Project_Id
+                    WHERE id = @Task_Id;";
 
-            return await _dbHelper.ExecuteNonQuery(query, parameters);
+                var parameters = new List<SqlParameter>
+                {
+                    new SqlParameter("@Title", SqlDbType.NVarChar) { Value = task.Title },
+                    new SqlParameter("@Description", SqlDbType.NVarChar) { Value = task.Description },
+                    new SqlParameter("@Status", SqlDbType.Int) { Value = task.Status },
+                    new SqlParameter("@Priority", SqlDbType.Int) { Value = task.Priority },
+                    new SqlParameter("@Deadline", SqlDbType.DateTime) { Value = task.Deadline },
+                    new SqlParameter("@User_Id", SqlDbType.Int) { Value = (object?)task.UserId ?? DBNull.Value },
+                    new SqlParameter("@Project_Id", SqlDbType.Int) { Value = task.ProjectId },
+                    new SqlParameter("@Task_Id", SqlDbType.Int) { Value = task.Id }
+                };
+
+                return await _dbHelper.ExecuteNonQuery(query, parameters);
+            }
+            catch (SqlException ex)
+            {
+                throw new DatabaseException("Error updating task.", ex);
+            }
         }
     }
 }

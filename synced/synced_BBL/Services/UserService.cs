@@ -34,28 +34,22 @@ namespace synced_BBL.Services
             try
             {
                 if (string.IsNullOrEmpty(login.email) || string.IsNullOrEmpty(login.password))
-                {
                     return OperationResult<int>.Failure("Email and password must not be empty.");
-                }
 
-                int userId = await _userRepository.Login(login.email, login.password);
+                User user = await _userRepository.GetByMail(login.email);
+                if (user == null)
+                    return OperationResult<int>.Failure("Invalid email or password.");
 
-                if (userId > 0)
-                {
-                    return OperationResult<int>.Success(userId);
-                }
+                if (!user.VerifyPassword(login.password))
+                    return OperationResult<int>.Failure("Invalid email or password.");
 
-                return OperationResult<int>.Failure("Invalid email or password.");
+                return OperationResult<int>.Success(user.Id);
             }
             catch (DatabaseException ex)
             {
                 return OperationResult<int>.Failure(ex.Message);
             }
-            catch (SqlException ex) 
-            {
-                return OperationResult<int>.Failure(DatabaseHelper.GetErrorMessage(ex));
-            }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return OperationResult<int>.Failure("An unexpected error occurred. Please try again.");
             }
@@ -74,25 +68,26 @@ namespace synced_BBL.Services
                 {
                     return OperationResult<int>.Failure("Email cannot be empty.");
                 }
-
                 if (string.IsNullOrEmpty(userDto.Password))
                 {
                     return OperationResult<int>.Failure("Password cannot be empty.");
                 }
 
-                int existingUserId = await GetUserByEmail(userDto.Email);
-                if (existingUserId > 0)
+                var existing = await _userRepository.GetByMail(userDto.Email);
+                if (existing != null)
                 {
                     return OperationResult<int>.Failure("Email already exists.");
                 }
 
-                var mappedUser = Mapper.MapCreate<User>(userDto);
-                if (mappedUser == null)
-                {
-                    return OperationResult<int>.Failure("User mapping failed.");
-                }
+                var newUser = User.Create(
+                    userDto.Username,
+                    userDto.Firstname,
+                    userDto.Lastname,
+                    userDto.Email,
+                    userDto.Password
+                );
 
-                int newUserId = await _userRepository.Register(mappedUser);
+                int newUserId = await _userRepository.Register(newUser);
 
                 if (newUserId > 0)
                 {
@@ -101,19 +96,18 @@ namespace synced_BBL.Services
 
                 return OperationResult<int>.Failure("Failed to register user.");
             }
+            catch (ArgumentException ex)
+            {
+                return OperationResult<int>.Failure(ex.Message);
+            }
             catch (DatabaseException ex)
             {
                 return OperationResult<int>.Failure(ex.Message);
             }
-            catch (SqlException ex) 
-            {
-                return OperationResult<int>.Failure(DatabaseHelper.GetErrorMessage(ex));
-            }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return OperationResult<int>.Failure("An unexpected error occurred. Please try again.");
             }
-            
         }
     }
 }
