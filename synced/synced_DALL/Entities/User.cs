@@ -110,6 +110,18 @@ namespace synced_DALL.Entities
             u.Id = id;
             return u;
         }
+        public void ChangeEmail(string email)
+        {
+            Email = email;
+        }
+
+        public void ChangePassword(string newPassword)
+        {
+            if (string.IsNullOrWhiteSpace(newPassword))
+                throw new ArgumentException("Password cannot be empty.");
+
+            PasswordHash = HashPassword(newPassword);
+        }
 
         public bool VerifyPassword(string attempt)
         {
