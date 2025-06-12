@@ -7,11 +7,11 @@
         private string _description;
         private DateOnly _startDate;
         private DateOnly _endDate;
-        private int _owner;
+        private int _ownerId;
 
         // ───────────── Properties ─────────────
         public int Id { get; private set; }
-        public User User { get; private set; }
+        public User Owner { get; private set; }
 
         public string Name
         {
@@ -49,14 +49,14 @@
                     throw new ArgumentException("End_Date cannot be before Start_Date.");
             }
         }
-        public int Owner
+        public int OwnerId
         {
-            get => _owner;
+            get => _ownerId;
             private set
             {
                 if (value <= 0)
                     throw new ArgumentException("Owner must be a positive user ID.");
-                _owner = value;
+                _ownerId = value;
             }
         }
 
@@ -82,7 +82,7 @@
                 Description = description,
                 Start_Date = startDate,
                 End_Date = endDate,
-                Owner = ownerUserId
+                OwnerId = ownerUserId
             };
         }
 
@@ -99,7 +99,7 @@
             _description = description;
             _startDate = startDate;
             _endDate = endDate;
-            _owner = ownerUserId;
+            _ownerId = ownerUserId;
         }
 
         protected Project() { }
@@ -123,7 +123,7 @@
                 ownerUserId
             );
             typeof(Project)
-                .GetProperty(nameof(Project.User))
+                .GetProperty(nameof(Project.Owner))
                 .SetValue(p, ownerUser);
 
             return p;

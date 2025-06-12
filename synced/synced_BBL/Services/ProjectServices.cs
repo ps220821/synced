@@ -36,7 +36,7 @@ namespace synced_BBL.Services
                     Description = project.Description,
                     Start_Date = project.Start_Date,
                     End_Date = project.End_Date,
-                    Owner = project.Owner
+                    OwnerId = project.OwnerId
                 }).ToList();
 
                 return OperationResult<List<ProjectDto>>.Success(projectDtos);
@@ -57,7 +57,7 @@ namespace synced_BBL.Services
                     projectDto.Description,
                     projectDto.Start_Date,
                     projectDto.End_Date,
-                    projectDto.Owner
+                    projectDto.OwnerId
                 );
 
                 int newProjectId = await _projectRepository.CreateAsync(mappedProject);
@@ -67,7 +67,7 @@ namespace synced_BBL.Services
 
                 ProjectUsers projectUser = ProjectUsers.Create(
                      newProjectId,
-                     mappedProject.Owner,
+                     mappedProject.OwnerId,
                      Roles.admin
                  );
 

@@ -52,7 +52,7 @@ namespace synced.Pages.Dashboard.Projects
         {
             if (ModelState.IsValid)
             {
-                NewProject.Owner = HttpContext.Session.GetInt32("UserId") ?? 0;
+                NewProject.OwnerId = HttpContext.Session.GetInt32("UserId") ?? 0;
                 OperationResult<bool> result = await _projectService.CreateProject(this.NewProject);
                 if (result.Succeeded)
                 {

@@ -89,7 +89,6 @@ namespace synced_BBL.Services
                         Firstname = pu.User.Firstname,
                         Lastname = pu.User.Lastname,
                         Email = pu.User.Email,
-                        Password = pu.User.Password,
                         Created_at = pu.User.CreatedAt
                     })
                     .ToList();

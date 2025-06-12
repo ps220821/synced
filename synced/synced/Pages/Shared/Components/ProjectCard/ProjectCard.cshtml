@@ -10,8 +10,8 @@
         </div>
         <form id="deleteForm_@Model.Id" method="post" asp-page-handler="delete">
             <input type="hidden" name="ProjectId" value="@Model.Id" />
-            <input type="hidden" name="OwnerId" value="@Model.Owner" />
-            @if (Model.Owner == Model.CurrentUserId)
+            <input type="hidden" name="OwnerId" value="@Model.OwnerId" />
+            @if (Model.OwnerId == Model.CurrentUserId)
             {
                 <button type="submit" class="btn btn-danger w-100">Delete</button>
             }

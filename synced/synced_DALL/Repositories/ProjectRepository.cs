@@ -98,7 +98,7 @@ namespace synced_DALL.Repositories
                     },
                     new SqlParameter("@StartDate", SqlDbType.Date) { Value = project.Start_Date },
                     new SqlParameter("@EndDate", SqlDbType.Date) { Value = project.End_Date },
-                    new SqlParameter("@Owner", SqlDbType.Int) { Value = project.Owner }
+                      new SqlParameter("@Owner", SqlDbType.Int) { Value = project.OwnerId }
                 };
 
                 return await _dbHelper.ExecuteScalar<int>(query, parameters);

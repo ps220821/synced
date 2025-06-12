@@ -147,7 +147,7 @@ namespace synced_tests
                 Firstname = "First",
                 Lastname = "User",
                 Email = "user1@example.com",
-                Password = "password123",
+                PasswordHash = "password123",
                 CreatedAt = DateTime.Now
             },
             Role = Roles.member
@@ -165,7 +165,7 @@ namespace synced_tests
                     Firstname = "Second",
                     Lastname = "User",
                     Email = "user2@example.com",
-                    Password = "password123",
+                    PasswordHash = "password123",
                     CreatedAt = DateTime.Now
                 },
                 Role = Roles.admin

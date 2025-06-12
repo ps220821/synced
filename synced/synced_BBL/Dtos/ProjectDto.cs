@@ -18,6 +18,6 @@ namespace synced_BBL.Dtos
 
         public DateOnly End_Date { get;  set; }
 
-        public int Owner { get; set; }
+        public int OwnerId { get; set; }
     }
 }

@@ -12,7 +12,7 @@ namespace synced.ViewComponents
                 Id = id,
                 Name = name,
                 Description = description,
-                Owner = ownerId,
+                OwnerId = ownerId,
                 CurrentUserId = currentUserId
             };
             return View("ProjectCard", model);

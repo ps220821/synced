@@ -34,8 +34,8 @@ namespace synced_tests
             int userId = 1;
             var projects = new List<Project>
             {
-                new Project { Id = 1, Name = "Project1", Description = "Desc1", Start_Date = DateOnly.FromDateTime(DateTime.Now), Owner = userId },
-                new Project { Id = 2, Name = "Project2", Description = "Desc2", Start_Date = DateOnly.FromDateTime(DateTime.Now), Owner = userId }
+                new Project { Id = 1, Name = "Project1", Description = "Desc1", Start_Date = DateOnly.FromDateTime(DateTime.Now), OwnerId = userId },
+                new Project { Id = 2, Name = "Project2", Description = "Desc2", Start_Date = DateOnly.FromDateTime(DateTime.Now), OwnerId = userId }
             };
 
             _projectRepoMock.Setup(repo => repo.GetAllAsync(userId)).ReturnsAsync(projects);
@@ -60,7 +60,7 @@ namespace synced_tests
                 Description = "Beschrijving",
                 Start_Date = DateOnly.FromDateTime(DateTime.Today),
                 End_Date = DateOnly.FromDateTime(DateTime.Today.AddDays(30)),
-                Owner = 1
+                OwnerId = 1
             };
 
             var mappedProject = new Project
@@ -69,7 +69,7 @@ namespace synced_tests
                 Description = projectDto.Description,
                 Start_Date = projectDto.Start_Date,
                 End_Date = projectDto.End_Date,
-                Owner = projectDto.Owner
+                OwnerId = projectDto.OwnerId
             };
 
             int fakeProjectId = 42;
@@ -96,7 +96,7 @@ namespace synced_tests
                 Description = "Test Beschrijving",
                 Start_Date = DateOnly.FromDateTime(DateTime.Today),
                 End_Date = DateOnly.FromDateTime(DateTime.Today.AddDays(10)),
-                Owner = 1
+                OwnerId = 1
             };
 
             _projectRepoMock.Setup(x => x.CreateAsync(It.IsAny<Project>())).ReturnsAsync(0); // Simuleer mislukking

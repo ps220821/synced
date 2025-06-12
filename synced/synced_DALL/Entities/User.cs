@@ -6,7 +6,7 @@ namespace synced_DALL.Entities
     {
         // ───────────── Backing fields ─────────────
         private string _email;
-        private string _password;
+        private string _passwordHash;
 
         // ───────────── Properties ─────────────
         public int Id { get; private set; }
@@ -26,14 +26,14 @@ namespace synced_DALL.Entities
             }
         }
 
-        public string Password
+        public string PasswordHash
         {
-            get => _password;
+            get => _passwordHash;
             private set
             {
                 if (string.IsNullOrWhiteSpace(value))
-                    throw new ArgumentException("Password cannot be empty.");
-                _password = value;
+                    throw new ArgumentException("Password hash cannot be empty.");
+                _passwordHash = value;
             }
         }
 
@@ -60,7 +60,7 @@ namespace synced_DALL.Entities
                 Firstname = firstname?.Trim(),
                 Lastname = lastname?.Trim(),
                 Email = email,
-                Password = password,
+                PasswordHash = HashPassword(password),
                 CreatedAt = DateTime.UtcNow
             };
         }
@@ -72,7 +72,7 @@ namespace synced_DALL.Entities
             string firstname,
             string lastname,
             string email,
-            string password,
+            string passwordHash,
             DateTime createdAt)
         {
             Id = id;
@@ -80,7 +80,7 @@ namespace synced_DALL.Entities
             Firstname = firstname;
             Lastname = lastname;
             _email = email;
-            _password = password;
+            _passwordHash = passwordHash;
             CreatedAt = createdAt;
         }
 
@@ -93,13 +93,13 @@ namespace synced_DALL.Entities
            string firstname,
            string lastname,
            string email,
-           string password,
+           string passwordHash,
            DateTime createdAt)
         {
             User u = new User
             {
                 _email = email,
-                _password = password,
+                _passwordHash = passwordHash,
                 Username = username,
                 Firstname = firstname,
                 Lastname = lastname,
@@ -112,7 +112,14 @@ namespace synced_DALL.Entities
         public bool VerifyPassword(string attempt)
         {
             if (attempt == null) return false;
-            return attempt == Password;
+            return HashPassword(attempt) == PasswordHash;
+        }
+
+        private static string HashPassword(string password)
+        {
+            using var sha = System.Security.Cryptography.SHA256.Create();
+            var bytes = sha.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+            return Convert.ToBase64String(bytes);
         }
     }
 }
