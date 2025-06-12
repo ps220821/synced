@@ -47,11 +47,11 @@ namespace synced_DAL
             {
                 using (SqlConnection connection = GetConnection())
                 {
-                    connection.Open();
+                    await connection.OpenAsync();
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
                         command.Parameters.AddRange(parameters.ToArray());
-                        object result = command.ExecuteScalar();
+                        object result = await command.ExecuteScalarAsync();
                         return (result != null && result != DBNull.Value) ? (T)Convert.ChangeType(result, typeof(T)) : default;
                     }
                 }

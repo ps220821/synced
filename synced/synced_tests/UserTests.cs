@@ -7,6 +7,7 @@ using synced_BBL.Dtos;
 using synced.Core.Results;
 using System;
 using Task = System.Threading.Tasks.Task;
+using synced_DALL.Entities;
 
 
 namespace synced_tests
@@ -79,6 +80,34 @@ namespace synced_tests
             // Assert
             Assert.False(result.Succeeded); // De registratie moet mislukken
             Assert.Equal("Email already exists.", result.Message); // Verwacht bericht
+        }
+
+        [Fact]
+        public void Create_HashesPassword()
+        {
+            string plain = "mypassword";
+            var user = User.Create("u", "f", "l", "email@example.com", plain);
+
+            Assert.NotEqual(plain, user.Password); // wacht dat wachtwoord gehasht is
+            Assert.False(string.IsNullOrWhiteSpace(user.Password));
+        }
+
+        [Fact]
+        public void VerifyPassword_ReturnsTrue_ForCorrectPlaintext()
+        {
+            string plain = "secret";
+            var user = User.Create("u", "f", "l", "email@example.com", plain);
+
+            Assert.True(user.VerifyPassword(plain));
+        }
+
+        [Fact]
+        public void Password_IsNotStoredAsPlainText()
+        {
+            string plain = "plain";
+            var user = User.Create("u", "f", "l", "email@example.com", plain);
+
+            Assert.NotEqual(plain, user.Password); // controleer dat wachtwoord niet in plain text wordt opgeslagen
         }
     }
 }

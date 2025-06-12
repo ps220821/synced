@@ -133,9 +133,24 @@ namespace synced_BBL.Services
             }
         }
 
-        public Task<OperationResult<bool>> DeleteTask(int id)
+        public async Task<OperationResult<bool>> DeleteTask(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                bool deleted = _taskRepository.DeleteAsync(id);
+
+                return deleted
+                    ? OperationResult<bool>.Success(true)
+                    : OperationResult<bool>.Failure("Task could not be deleted or does not exist.");
+            }
+            catch (DatabaseException ex)
+            {
+                return OperationResult<bool>.Failure(ex.Message);
+            }
+            catch (Exception)
+            {
+                return OperationResult<bool>.Failure("An unexpected error occurred while deleting the task.");
+            }
         }
     }
 }
