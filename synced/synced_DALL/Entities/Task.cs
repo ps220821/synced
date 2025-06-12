@@ -192,5 +192,20 @@ namespace synced_DALL.Entities
             temp.Id = id;
             return temp;
         }
+        public void AssignUser(int userId, User user)
+        {
+            if (userId <= 0)
+                throw new ArgumentException("UserId must be a positive integer.");
+
+            UserId = userId;
+            User = user;
+        }
+
+        public void UnassignUser()
+        {
+            UserId = null;
+            User = null;
+        }
+
     }
 }
