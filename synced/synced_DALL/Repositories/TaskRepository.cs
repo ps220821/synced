@@ -44,7 +44,7 @@ namespace synced_DALL.Repositories
             }
         }
 
-        public bool DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
             try
             {
@@ -54,7 +54,7 @@ namespace synced_DALL.Repositories
                     new SqlParameter("@TaskId", SqlDbType.Int) { Value = id }
                 };
 
-                int rowsAffected = _dbHelper.ExecuteNonQuery(query, parameters).Result;
+                int rowsAffected = await _dbHelper.ExecuteNonQuery(query, parameters);
                 return rowsAffected > 0;
             }
             catch (SqlException ex)

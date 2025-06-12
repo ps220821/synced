@@ -137,7 +137,7 @@ namespace synced_BBL.Services
         {
             try
             {
-                bool deleted = _taskRepository.DeleteAsync(id);
+                bool deleted = await _taskRepository.DeleteAsync(id);
 
                 return deleted
                     ? OperationResult<bool>.Success(true)
