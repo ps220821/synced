@@ -1,18 +1,9 @@
-﻿using Microsoft.Data.SqlClient;
-using synced.Core.Results;
+﻿using synced.Core.Results;
 using synced_BBL.Dtos;
 using synced_BBL.Interfaces;
 using synced_DAL;
 using synced_DAL.Interfaces;
-using synced_DAL.Repositories;
 using synced_DALL.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using velocitaApi.Mappers;
-
 namespace synced_BBL.Services
 {
     public class UserService : IUserService

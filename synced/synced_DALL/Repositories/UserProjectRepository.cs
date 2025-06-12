@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Data;
+﻿using System.Data;
 using Microsoft.Data.SqlClient;
 using synced_DAL;
 using synced_DALL.Entities;
