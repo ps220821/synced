@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿
 using synced.Core.Results;
 using synced_BBL.Dtos;
 using synced_BBL.Interfaces;
-using synced_DAL.Interfaces;
 using synced_DALL.Entities;
 using synced_DALL.Interfaces;
 

@@ -2,10 +2,7 @@
 using synced_DAL;
 using synced_DALL.Entities;
 using synced_DALL.Interfaces;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Threading.Tasks;
 using Task = synced_DALL.Entities.Task;
 
 namespace synced_DALL.Repositories
