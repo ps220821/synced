@@ -105,7 +105,7 @@ namespace synced_DAL.Repositories
                     new SqlParameter("@Firstname", SqlDbType.VarChar) { Value = user.Firstname ?? (object)DBNull.Value },
                     new SqlParameter("@Lastname", SqlDbType.VarChar) { Value = user.Lastname ?? (object)DBNull.Value },
                     new SqlParameter("@Email", SqlDbType.VarChar) { Value = user.Email },
-                    new SqlParameter("@Password", SqlDbType.VarChar) { Value = user.Password },
+                    new SqlParameter("@Password", SqlDbType.VarChar) { Value = user.PasswordHash },
                     new SqlParameter("@CreatedAt", SqlDbType.DateTime) { Value = user.CreatedAt }
                 };
 

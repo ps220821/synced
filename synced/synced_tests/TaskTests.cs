@@ -214,5 +214,29 @@ namespace synced_tests
             Assert.Equal("Task could not be updated or does not exist.", result.Message);
         }
 
+        [Fact]
+        public async System.Threading.Tasks.Task DeleteTask_ReturnsSuccess_WhenTaskIsDeleted()
+        {
+            int taskId = 1;
+            _taskRepoMock.Setup(x => x.DeleteAsync(taskId)).Returns(true);
+
+            var result = await _taskService.DeleteTask(taskId);
+
+            Assert.True(result.Succeeded);
+            Assert.True(result.Data);
+        }
+
+        [Fact]
+        public async System.Threading.Tasks.Task DeleteTask_ReturnsFailure_WhenTaskNotFound()
+        {
+            int taskId = 1;
+            _taskRepoMock.Setup(x => x.DeleteAsync(taskId)).Returns(false);
+
+            var result = await _taskService.DeleteTask(taskId);
+
+            Assert.False(result.Succeeded);
+            Assert.Equal("Task could not be deleted or does not exist.", result.Message);
+        }
+
     }
 }

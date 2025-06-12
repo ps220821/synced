@@ -46,7 +46,21 @@ namespace synced_DALL.Repositories
 
         public bool DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                string query = "DELETE FROM tasks WHERE id = @TaskId;";
+                var parameters = new List<SqlParameter>
+                {
+                    new SqlParameter("@TaskId", SqlDbType.Int) { Value = id }
+                };
+
+                int rowsAffected = _dbHelper.ExecuteNonQuery(query, parameters).Result;
+                return rowsAffected > 0;
+            }
+            catch (SqlException ex)
+            {
+                throw new DatabaseException("Error deleting task.", ex);
+            }
         }
 
         public async Task<List<Task>> GetAllAsync(int projectId)
