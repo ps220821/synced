@@ -86,6 +86,19 @@
             };
         }
 
+        public static Project FromExisting(
+            int id,
+            string name,
+            string description,
+            DateOnly startDate,
+            DateOnly endDate,
+            int ownerUserId)
+        {
+            var project = Create(name, description, startDate, endDate, ownerUserId);
+            typeof(Project).GetProperty(nameof(Id))!.SetValue(project, id);
+            return project;
+        }
+
         internal Project(
             int id,
             string name,

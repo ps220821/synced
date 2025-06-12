@@ -17,7 +17,7 @@ namespace synced_DALL.Interfaces
 
         Task<int> UpdateAsync(Task task);
 
-        bool DeleteAsync(int id);
+        Task<bool> DeleteAsync(int id);
     }
 }
 

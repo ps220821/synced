@@ -88,8 +88,8 @@ namespace synced_tests
             string plain = "mypassword";
             var user = User.Create("u", "f", "l", "email@example.com", plain);
 
-            Assert.NotEqual(plain, user.Password); // wacht dat wachtwoord gehasht is
-            Assert.False(string.IsNullOrWhiteSpace(user.Password));
+            Assert.NotEqual(plain, user.PasswordHash);
+            Assert.False(string.IsNullOrWhiteSpace(user.PasswordHash));
         }
 
         [Fact]
@@ -107,7 +107,7 @@ namespace synced_tests
             string plain = "plain";
             var user = User.Create("u", "f", "l", "email@example.com", plain);
 
-            Assert.NotEqual(plain, user.Password); // controleer dat wachtwoord niet in plain text wordt opgeslagen
+            Assert.NotEqual(plain, user.PasswordHash);
         }
     }
 }

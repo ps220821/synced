@@ -34,8 +34,22 @@ namespace synced_tests
             int userId = 1;
             var projects = new List<Project>
             {
-                new Project { Id = 1, Name = "Project1", Description = "Desc1", Start_Date = DateOnly.FromDateTime(DateTime.Now), Owner = userId },
-                new Project { Id = 2, Name = "Project2", Description = "Desc2", Start_Date = DateOnly.FromDateTime(DateTime.Now), Owner = userId }
+                Project.FromExisting(
+                    1,
+                    "Project1",
+                    "Desc1",
+                    DateOnly.FromDateTime(DateTime.Now),
+                    DateOnly.FromDateTime(DateTime.Now),
+                    userId
+                ),
+                Project.FromExisting(
+                    2,
+                    "Project2",
+                    "Desc2",
+                    DateOnly.FromDateTime(DateTime.Now),
+                    DateOnly.FromDateTime(DateTime.Now),
+                    userId
+                )
             };
 
             _projectRepoMock.Setup(repo => repo.GetAllAsync(userId)).ReturnsAsync(projects);
@@ -63,14 +77,13 @@ namespace synced_tests
                 Owner = 1
             };
 
-            var mappedProject = new Project
-            {
-                Name = projectDto.Name,
-                Description = projectDto.Description,
-                Start_Date = projectDto.Start_Date,
-                End_Date = projectDto.End_Date,
-                Owner = projectDto.Owner
-            };
+            var mappedProject = Project.Create(
+                projectDto.Name,
+                projectDto.Description,
+                projectDto.Start_Date,
+                projectDto.End_Date,
+                projectDto.Owner
+            );
 
             int fakeProjectId = 42;
 
