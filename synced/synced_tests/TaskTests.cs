@@ -28,36 +28,33 @@ namespace synced_tests
             // Arrange
             var tasks = new List<Task>
             {
-                Task.FromExisting(
-                    1,
-                    "Task 1",
-                    "",
-                    Status.todo,
-                    Priorities.medium,
-                    DateTime.Now,
-                    null,
-                    1
-                ),
-                Task.FromExisting(
-                    2,
-                    "Task 2",
-                    "",
-                    Status.inprogress,
-                    Priorities.high,
-                    DateTime.Now.AddDays(1),
-                    null,
-                    1
-                ),
-                Task.FromExisting(
-                    3,
-                    "Task 3",
-                    "",
-                    Status.done,
-                    Priorities.low,
-                    DateTime.Now.AddDays(-1),
-                    null,
-                    1
-                )
+                new Task
+                {
+                    Id = 1,
+                    Title = "Task 1",
+                    Status = Status.todo,
+                    Priority = Priorities.medium,
+                    Deadline = DateTime.Now,
+                    ProjectId = 1
+                },
+                new Task
+                {
+                    Id = 2,
+                    Title = "Task 2",
+                    Status = Status.inprogress,
+                    Priority = Priorities.high,
+                    Deadline = DateTime.Now.AddDays(1),
+                    ProjectId = 1
+                },
+                new Task
+                {
+                    Id = 3,
+                    Title = "Task 3",
+                    Status = Status.done,
+                    Priority = Priorities.low,
+                    Deadline = DateTime.Now.AddDays(-1),
+                    ProjectId = 1
+                }
             };
 
             // Setup mock to return the tasks
@@ -104,16 +101,17 @@ namespace synced_tests
                 UserId = 1
             };
 
-            var newTask = Task.FromExisting(
-                1,
-                taskDto.Title,
-                taskDto.Description,
-                taskDto.Status,
-                taskDto.Priority,
-                taskDto.Deadline,
-                taskDto.UserId,
-                taskDto.ProjectId
-            );
+            var newTask = new Task
+            {
+                Id = 1,
+                Title = taskDto.Title,
+                Description = taskDto.Description,
+                Status = taskDto.Status,
+                Priority = taskDto.Priority,
+                Deadline = taskDto.Deadline,
+                ProjectId = taskDto.ProjectId,
+                UserId = taskDto.UserId
+            };
 
             _taskRepoMock.Setup(x => x.CreateAsync(It.IsAny<Task>())).ReturnsAsync(1); 
 
@@ -168,16 +166,17 @@ namespace synced_tests
                 UserId = 1
             };
 
-            var updatedTask = Task.FromExisting(
-                taskDto.Id,
-                taskDto.Title,
-                taskDto.Description,
-                taskDto.Status,
-                taskDto.Priority,
-                taskDto.Deadline,
-                taskDto.UserId,
-                taskDto.ProjectId
-            );
+            var updatedTask = new Task
+            {
+                Id = taskDto.Id,
+                Title = taskDto.Title,
+                Description = taskDto.Description,
+                Status = taskDto.Status,
+                Priority = taskDto.Priority,
+                Deadline = taskDto.Deadline,
+                ProjectId = taskDto.ProjectId,
+                UserId = taskDto.UserId,
+            };
 
             _taskRepoMock.Setup(x => x.UpdateAsync(It.IsAny<Task>())).ReturnsAsync(1);  // Simuleer succes
 
@@ -219,7 +218,7 @@ namespace synced_tests
         public async System.Threading.Tasks.Task DeleteTask_ReturnsSuccess_WhenTaskIsDeleted()
         {
             int taskId = 1;
-            _taskRepoMock.Setup(x => x.DeleteAsync(taskId)).ReturnsAsync(true);
+            _taskRepoMock.Setup(x => x.DeleteAsync(taskId)).Returns(true);
 
             var result = await _taskService.DeleteTask(taskId);
 
@@ -231,7 +230,7 @@ namespace synced_tests
         public async System.Threading.Tasks.Task DeleteTask_ReturnsFailure_WhenTaskNotFound()
         {
             int taskId = 1;
-            _taskRepoMock.Setup(x => x.DeleteAsync(taskId)).ReturnsAsync(false);
+            _taskRepoMock.Setup(x => x.DeleteAsync(taskId)).Returns(false);
 
             var result = await _taskService.DeleteTask(taskId);
 
